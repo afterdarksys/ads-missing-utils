@@ -1,11 +1,4 @@
 package main
-
-import (
-	"os"
-
-	"github.com/afterdarksys/ads-missing-utils/internal/planned"
-)
-
-func main() {
-	os.Exit(planned.Run("certwhy", "Explain certificate selection, trust, and validation failures.", os.Args[1:], os.Stdout, os.Stderr))
-}
+import("crypto/tls";"flag";"fmt";"os";"strings";"github.com/afterdarksys/ads-missing-utils/internal/cli")
+type result struct{Schema string `json:"schema"`;Outcome string `json:"outcome"`;Address string `json:"address"`;Subject string `json:"subject,omitempty"`;Issuer string `json:"issuer,omitempty"`;Conclusion string `json:"conclusion"`}
+func main(){os.Exit(run())};func run()int{fs:=flag.NewFlagSet("certwhy",flag.ContinueOnError);fs.SetOutput(os.Stderr);address:=fs.String("address","","TLS host:port");format:=fs.String("format","json","json");version:=fs.Bool("version",false,"print version");noColor:=fs.Bool("no-color",false,"disable color");_=noColor;if err:=fs.Parse(os.Args[1:]);err!=nil{return 2};if *version{fmt.Fprintln(os.Stdout,cli.Version);return 0};if *address==""||*format!="json"||len(fs.Args())!=0{fmt.Fprintln(os.Stderr,"--address and --format json are required");return 2};host:=strings.Split(*address,":")[0];connection,err:=tls.Dial("tcp",*address,&tls.Config{ServerName:host,MinVersion:tls.VersionTLS12});if err!=nil{fmt.Fprintln(os.Stderr,err);return 1};defer connection.Close();certificate:=connection.ConnectionState().PeerCertificates[0];cli.WriteJSON(os.Stdout,result{"missing-utils/certwhy/v1","pass",*address,certificate.Subject.String(),certificate.Issuer.String(),"TLS handshake and peer certificate chain validated"});return 0}

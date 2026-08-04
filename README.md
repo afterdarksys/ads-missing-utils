@@ -30,17 +30,17 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | Command | Status | Question it answers |
 |---|---|---|
 | `portwhy` | Implemented, unreleased | Explain visible Linux listener ownership and report partial visibility. |
-| `accesswhy` | Test scaffold | Why can or cannot an identity access this filesystem object? |
+| `accesswhy` | Implemented, unreleased | Report path mode and local identity evidence, with explicit access-control gaps. |
 | `patchwhy` | Test scaffold | Which processes still use replaced code, and what must restart? |
 | `netwhy` | Test scaffold | Which DNS, route, namespace, proxy, and firewall decisions affect this connection? |
 | `servicewhy` | Test scaffold | Why is this service unhealthy, restarting, or blocked? |
 | `binarywhy` | Implemented, unreleased | Report executable metadata and a SHA-256 integrity observation. |
-| `authwhy` | Test scaffold | Which account, group, SSH, PAM, NSS, or policy rule affects login? |
-| `certwhy` | Test scaffold | Which certificate and trust path are in use, and why does validation fail? |
-| `expose` | Test scaffold | Which services are reachable from each interface or namespace? |
+| `authwhy` | Implemented, unreleased | Report local account and group evidence, with explicit authentication-policy gaps. |
+| `certwhy` | Implemented, unreleased | Inspect a live TLS peer certificate and validation result. |
+| `expose` | Implemented, unreleased | Report local listener exposure, with explicit firewall/reachability gaps. |
 | `sandboxdiff` | Test scaffold | How do two workloads differ in isolation and attack surface? |
-| `driftwhy` | Test scaffold | What security-relevant state changed, and what mechanism changed it? |
-| `incidentsnap` | Test scaffold | How can a responder collect a redacted, integrity-verifiable host snapshot? |
+| `driftwhy` | Implemented, unreleased | Capture a current file-content fingerprint for later drift comparison. |
+| `incidentsnap` | Implemented, unreleased | Capture a minimal read-only host identity snapshot. |
 
 ### Automation and infrastructure as code
 
