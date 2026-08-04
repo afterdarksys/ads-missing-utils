@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afterdarksys/ads-missing-utils/schemas/hashsum-v1.json",
+  "type": "object",
+  "required": ["schema", "algorithms", "root", "files"],
+  "properties": {
+    "schema": { "const": "missing-utils/hashsum/v1" },
+    "algorithms": { "type": "array", "items": { "enum": ["sha256", "blake3"] }, "minItems": 1 },
+    "root": { "type": "string", "minLength": 1 },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "size", "mtime", "status", "digests"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "size": { "type": "integer", "minimum": 0 },
+          "mtime": { "type": "string", "format": "date-time" },
+          "status": { "enum": ["stable", "unstable"] },
+          "digests": { "type": "object", "minProperties": 1 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afterdarksys/ads-missing-utils/schemas/envsub-v1.json",
+  "type": "object",
+  "required": ["schema", "outcome"],
+  "properties": {
+    "schema": { "const": "missing-utils/envsub/v1" },
+    "outcome": { "enum": ["pass", "fail", "partial", "error"] },
+    "rendered": { "type": "string" },
+    "keys": { "type": "array", "items": { "type": "string" } },
+    "resolutions": { "type": "array" },
+    "diagnostics": { "type": "array" }
+  }
+}

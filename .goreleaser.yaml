@@ -1,0 +1,36 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: jwalk
+    main: ./cmd/jwalk
+    binary: jwalk
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: envsub
+    main: ./cmd/envsub
+    binary: envsub
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: hashsum
+    main: ./cmd/hashsum
+    binary: hashsum
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+
+archives:
+  - format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: checksums.txt
+
+sboms:
+  - artifacts: archive

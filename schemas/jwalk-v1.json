@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afterdarksys/ads-missing-utils/schemas/jwalk-v1.json",
+  "type": "object",
+  "required": ["schema", "status", "path"],
+  "properties": {
+    "schema": { "const": "missing-utils/jwalk/v1" },
+    "status": { "enum": ["ok", "error"] },
+    "path": { "type": "string", "minLength": 1 },
+    "relative_path": { "type": ["string", "null"] },
+    "type": { "enum": ["file", "directory", "symlink", "other", null] },
+    "size": { "type": ["integer", "null"], "minimum": 0 },
+    "mtime": { "type": ["string", "null"], "format": "date-time" },
+    "mode": { "type": ["string", "null"] },
+    "uid": { "type": ["integer", "null"], "minimum": 0 },
+    "gid": { "type": ["integer", "null"], "minimum": 0 },
+    "inode": { "type": ["integer", "null"], "minimum": 0 },
+    "device": { "type": ["integer", "null"], "minimum": 0 }
+  }
+}

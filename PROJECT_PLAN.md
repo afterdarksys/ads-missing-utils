@@ -2,6 +2,8 @@
 
 **Status:** Initial proposal
 
+**Implementation status:** The v1 foundation (`jwalk`, `envsub`, and `hashsum`) is implemented and unreleased. All remaining utilities are planned.
+
 **Working title:** Missing Utils
 
 **Primary platform:** Linux, with explicit cross-platform support where noted
@@ -620,7 +622,7 @@ Example external response:
 
 The estimates assume one primary engineer. Parallel work can shorten elapsed time but should not weaken shared-contract review.
 
-### Milestone 0: Foundation — 1 week
+### Milestone 0: Foundation — implemented, unreleased
 
 - Initialize the Go module, command layout, linting, tests, release build, and CI.
 - Define CLI conventions, exit codes, logging, cancellation, and structured errors.
@@ -629,7 +631,7 @@ The estimates assume one primary engineer. Parallel work can shorten elapsed tim
 
 **Exit criteria:** A skeleton command builds reproducibly on the initial OS matrix; release artifacts include checksums and provenance.
 
-### Milestone 1: File and pipeline primitives — 4 to 6 weeks
+### Milestone 1: File and pipeline primitives — implemented, unreleased
 
 - Implement `jwalk` MVP with traversal-race, permission, symlink-loop, and pathological-tree tests.
 - Implement `envsub` MVP with schema validation, secret masking, and atomic output.

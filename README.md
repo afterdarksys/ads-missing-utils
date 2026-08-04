@@ -3,7 +3,7 @@
 Small, composable command-line tools for DevOps, infrastructure automation, and security diagnostics.
 
 > [!IMPORTANT]
-> Missing Utils is currently in the planning stage. The interfaces and command names described below are proposals; binaries have not been released yet.
+> The v1 foundation (`jwalk`, `envsub`, and `hashsum`) is implemented in this repository but has not been released yet. The remaining utilities are planned proposals.
 
 Linux has excellent low-level tools for inspecting files, processes, services, networks, and security controls. What is often missing is a safe, structured way to combine that evidence—or to replace a fragile shell pipeline with a predictable command.
 
@@ -12,17 +12,17 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 - make routine operational work fast, safe, and JSON-native;
 - explain *why* a system behaves as it does, with evidence and explicit uncertainty.
 
-## What is planned
+## Toolkit roadmap
 
 ### Operational primitives
 
-| Command | Purpose |
-|---|---|
-| `jwalk` | Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines. |
-| `envsub` | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. |
-| `hashsum` | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. |
-| `pwatch` | Track a process and its descendants, detect resource spikes, and capture opt-in diagnostics. |
-| `ports` | Produce a uniform process-to-listener map across Linux, BSD, and Solaris-family systems. |
+| Command | Status | Purpose |
+|---|---|---|
+| `jwalk` | Implemented, unreleased | Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines. |
+| `envsub` | Implemented, unreleased | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. |
+| `hashsum` | Implemented, unreleased | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. |
+| `pwatch` | Planned | Track a process and its descendants, detect resource spikes, and capture opt-in diagnostics. |
+| `ports` | Planned | Produce a uniform process-to-listener map across Linux, BSD, and Solaris-family systems. |
 
 ### Causal diagnostics
 
@@ -79,9 +79,9 @@ For example, file discovery and manifest generation are designed to compose with
 
 ```sh
 jwalk ./release --type file \
-  | hashsum create --from-jwalk --output release.hashes.json
+  | hashsum create --from-jwalk --root ./release --output release.hashes.json
 
-hashsum verify release.hashes.json --root ./release
+hashsum verify --root ./release release.hashes.json
 ```
 
 A Terraform plan pipeline could emit normalized changes and make an explicit gate decision:
@@ -92,7 +92,23 @@ terraform show -json tfplan \
   | jsongate --policy deployment-gate.yaml
 ```
 
-These examples describe the proposed command contracts and are not yet runnable.
+The file-manifest example is runnable with the v1 foundation below. The Terraform example remains a proposed contract for the planned automation/IaC track.
+
+## v1 foundation
+
+The implemented, unreleased v1 commands are `jwalk`, `envsub`, and `hashsum`.
+
+```sh
+asdf install # if you use asdf; the project pins Go 1.24.6
+make build
+
+./dist/jwalk ./release --type file --format ndjson
+./dist/envsub --input app.yaml.tmpl --schema env.schema.yaml --output app.yaml
+./dist/jwalk ./release --type file | ./dist/hashsum create --from-jwalk --root ./release --output release.hashes.json
+./dist/hashsum verify --root ./release release.hashes.json
+```
+
+Run `make test` for unit tests or `make check` for static analysis plus tests. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
 
 ## Design principles
 
@@ -122,9 +138,9 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for utility specifications, architecture,
 
 ## Current status
 
-The repository currently contains planning documentation only. The proposed implementation is Go, producing dependency-light standalone binaries. Linux is the primary platform; portable utilities will target additional operating systems, and `ports` has explicit BSD and Solaris/illumos ambitions. Exact minimum versions will be published in a tested support matrix.
+The repository contains a Go 1.24+ implementation of the v1 foundation, its schemas, tests, CI, and release configuration. Linux is the primary platform; the v1 file/configuration commands also build on macOS and Windows. The remaining planned utilities have platform support described in the project plan.
 
-The next milestone is to establish the Go module, shared JSON contracts, CI, release process, supported-platform matrix, and initial command skeletons.
+The next milestone is an unreleased v1 validation period for command contracts and packaging, followed by the automation/IaC track.
 
 Names are provisional. Several proposed command names overlap with existing packages or use generic terms, so naming and package-registry collision checks will happen before the first release.
 
@@ -142,8 +158,8 @@ Useful contributions at this stage include:
 - security boundaries and failure modes the plan should address;
 - benchmark corpora and reproducible test scenarios.
 
-Before implementation begins, contribution guidelines, a code of conduct, and a security policy will be added.
+Before broader implementation begins, contribution guidelines, a code of conduct, and a security policy will be added.
 
 ## License
 
-No open-source license has been selected yet. Until a license is published, the repository remains unlicensed and no reuse rights are granted beyond those provided by applicable law.
+Missing Utils is available under the [MIT License](LICENSE).
