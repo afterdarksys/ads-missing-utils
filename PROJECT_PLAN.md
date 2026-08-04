@@ -95,6 +95,8 @@ These commands consume and emit JSON as their primary interface. They are design
 | `jsonprobe` | Execute declarative DNS, TCP, TLS, HTTP, process, file, and command-free health checks | JSON check specification |
 | `jsondiff` | Compare structured desired and observed state with typed paths, ignore rules, keyed-array matching, and machine-readable changes | Two JSON documents |
 | `jsongate` | Convert findings from any suite command into a consistent pass, warn, deny, or approval-required decision | Findings and threshold policy |
+| `spacelift-helper` | Normalize Spacelift hook context, orchestrate suite checks, and retain redacted JSON reports and gate outcomes | Spacelift environment and suite responses |
+| `regocheck` | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift fixtures | Rego, JSON inputs, schemas, and expected decisions |
 
 These tools should remain narrow. `jsongate` is not a replacement for OPA/Rego, Sentinel, or Spacelift policy. It supplies a predictable local/CI exit decision for hooks and simple workflows; organizations with a policy engine can consume the underlying findings directly.
 
@@ -404,6 +406,80 @@ Turn findings from `tfchanges`, `jsondiff`, `hashsum`, `ports`, or causal diagno
 - Provide output adapters for generic CI annotations and concise Spacelift hook logs.
 - Never suppress the original evidence or silently downgrade unknown/partial results.
 
+### 6.11 `spacelift-helper`: lifecycle-hook adapter
+
+#### User promise
+
+Give every Missing Utils command a consistent, auditable way to participate in a Spacelift run without making individual tools understand Spacelift environment conventions, log formatting, or artifact layout.
+
+#### MVP capabilities
+
+- Read an allowlisted set of Spacelift run, stack, commit, stage, and workspace environment variables and emit a normalized context document.
+- Mark absent, computed, and secret-bearing context explicitly without dumping the full process environment.
+- Invoke a suite command with a versioned JSON request and validate its response schema.
+- Preserve the full redacted response in a deterministic report directory and print a concise summary suitable for run logs.
+- Translate `pass`, `warn`, `deny`, `approval_required`, `partial`, and operational errors into an explicitly configured hook exit policy.
+- Attach run, stack, stage, commit, tool version, schema version, start/end time, and report digest metadata to every result.
+- Provide `context`, `run`, `gate`, and `fixture` modes so hook wiring remains small and testable.
+- Record a redacted local fixture that can reproduce hook behavior outside Spacelift.
+- Support `--dry-run` and refuse ambiguous stage or output destinations.
+
+#### Example contract
+
+```shell
+spacelift-helper run \
+  --stage after_plan \
+  --report-dir .missing-utils/reports \
+  -- tfchanges summary --input tfplan.json
+```
+
+#### Boundaries
+
+- The MVP does not mutate stack configuration, contexts, approvals, or runs through the Spacelift API.
+- The helper prepares local reports; uploading or retaining them depends on documented Spacelift runner/hook facilities and explicit configuration.
+- It does not inject data into Spacelift policy evaluation or claim parity with the platform's native policy runtime.
+- Child commands are passed as argument arrays after `--`; the helper never evaluates a shell command string.
+- Secret and computed environment values are excluded by default and require an explicit allowlist even for redacted presence reporting.
+
+### 6.12 `regocheck`: OPA/Rego policy harness
+
+#### User promise
+
+Evaluate and test Rego policies locally against realistic, versioned inputs and receive stable JSON results before committing a policy to Spacelift or another OPA-based control plane.
+
+#### MVP capabilities
+
+- Run Rego evaluation and unit tests using a pinned, reported OPA engine version.
+- Support Rego v1 by default and require explicit compatibility mode for older syntax.
+- Accept individual modules, data directories, and OPA bundles without inventing a separate policy language.
+- Evaluate named decisions against JSON input from files or stdin and normalize results into the suite response/finding schema.
+- Run fixture matrices containing input, decision path, expected value, expected finding codes, and expected evaluation errors.
+- Expose OPA test pass/fail/error/skip results and line coverage as JSON.
+- Fail when no tests or fixtures run unless explicitly allowed.
+- Load JSON Schemas for input/data type checking and identify fixture/schema version mismatches.
+- Provide a Spacelift compatibility profile that rejects known-disabled built-ins and validates documented policy return shapes for the selected policy type.
+- Compare decisions across two policy or bundle revisions for regression analysis.
+- Produce JUnit and suite-native JSON reports for CI while keeping OPA diagnostics on stderr.
+
+#### Example contracts
+
+```shell
+regocheck test policy/ --profile spacelift-plan --coverage
+
+regocheck fixtures \
+  --policy policy/ \
+  --fixtures testdata/spacelift/plan \
+  --format json
+```
+
+#### Security and fidelity boundaries
+
+- Network-capable built-ins are denied by default through an explicit OPA capabilities profile.
+- Remote bundles and schemas require explicit opt-in, integrity verification, and a host allowlist.
+- Fixtures are treated as potentially sensitive because Terraform and Spacelift policy inputs can contain configuration, identities, and metadata; recording uses the shared redaction model.
+- Compatibility profiles approximate documented platform restrictions but do not guarantee identical behavior to a particular hosted Spacelift release. Reports always include the OPA version and profile revision.
+- `regocheck` complements `jsongate`: the former evaluates Rego; the latter applies simple thresholds to suite findings.
+
 ## 7. Shared architecture
 
 ### 7.1 Repository layout
@@ -425,6 +501,8 @@ internal/
   network/      socket, route, namespace, and policy collectors
   filesystem/   traversal and filesystem evidence
   manifest/     digest algorithms, file identity, and verification
+  automation/   hook contexts, reports, gate adapters, and fixtures
+  policy/       OPA execution profiles and normalized decisions
 schemas/        published JSON Schemas
 docs/           command references, threat model, and support matrix
 testdata/       fixtures and golden outputs
@@ -530,11 +608,13 @@ Example external response:
 ### 7.7 Spacelift integration
 
 - Ship a small runner-image layer and a checksum-verified installation recipe.
+- Use `spacelift-helper` as the optional adapter around suite commands; direct invocation remains supported.
 - Run `envsub`/`varmerge` in `before_init`, `tfchanges` after plan generation, and `jsonprobe`/`jsongate` in the appropriate before/after lifecycle hooks.
 - Write full JSON reports to run artifacts where available and print only concise, redacted summaries to logs.
 - Treat a nonzero hook exit as an execution gate only when the stack explicitly opts into that behavior.
 - Keep Spacelift OPA/Rego policies native. Spacelift policies receive platform-defined JSON and are intentionally self-contained; suite tools should not claim they can inject arbitrary runtime files into policy evaluation.
-- Generate documented finding codes that can be mirrored in Rego policies when an organization wants both local and platform-native enforcement.
+- Use `regocheck` to exercise policies locally with redacted Spacelift-shaped fixtures and the applicable compatibility profile before deployment.
+- Generate documented finding codes that can be mirrored in Rego policies when an organization wants both hook-based and platform-native enforcement.
 
 ## 8. Delivery roadmap
 
@@ -566,11 +646,13 @@ The estimates assume one primary engineer. Parallel work can shorten elapsed tim
 - Freeze the v1 request, response, finding, diagnostic, and gate schemas.
 - Implement `tfchanges` and `varmerge` MVPs.
 - Implement `jsonprobe` one-shot checks and a minimal `jsongate`; defer the more general `jsondiff` until real desired/observed schemas are available.
+- Implement `spacelift-helper` context/report handling and `regocheck` evaluation, fixtures, and JSON test output.
 - Publish the first Ansible collection modules for `envsub`, `varmerge`, `hashsum`, and `jsonprobe`.
 - Publish tested examples for Terraform external read-only use and Spacelift lifecycle hooks.
+- Add redacted fixture packs for Spacelift plan policies and validate them against a pinned OPA/Rego v1 toolchain.
 - Add contract fixtures proving that logs never contaminate stdout JSON.
 
-**Exit criteria:** One example workflow passes typed values through Ansible, creates a Terraform plan, evaluates plan facts in a Spacelift-compatible hook, and retains machine-readable results without shell parsing.
+**Exit criteria:** One example workflow passes typed values through Ansible, creates a Terraform plan, evaluates plan facts in a Spacelift-compatible hook, tests the corresponding Rego policy locally, and retains machine-readable results without shell parsing.
 
 ### Milestone 2: Runtime inventory on Linux — 4 to 5 weeks
 
@@ -619,6 +701,7 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 - Property and fuzz tests for untrusted templates, paths, environment files, and kernel-derived data.
 - Golden tests for human output and versioned JSON/NDJSON schemas.
 - Consumer-driven contract tests for Ansible module wrappers, Terraform's external string-map adapter, and Spacelift hook exit behavior.
+- Compatibility tests for Spacelift context fixtures, policy return shapes, disabled OPA built-ins, Rego versions, and OPA JSON result normalization.
 - Contract tests run against every platform adapter.
 - Namespace/container integration tests on Linux.
 - Privilege matrix tests as root and unprivileged users.
@@ -662,6 +745,8 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 - `hashsum` produces reproducible manifests, detects in-flight file changes, and verifies multi-terabyte sets with bounded memory.
 - Automation commands can round-trip their documented JSON contracts without stdout contamination, secret leakage, or type loss.
 - `tfchanges` preserves destructive, replacement, sensitive, and unknown plan semantics across supported Terraform/OpenTofu plan-format versions.
+- `spacelift-helper` produces reproducible redacted reports from recorded hook contexts without exposing secret environment values.
+- `regocheck` detects policy regressions, empty test suites, schema mismatches, and disallowed built-ins with stable JSON results.
 - `ports` correctly maps listeners to owners across the supported privilege/platform matrix.
 - `pwatch` retains correct process identity through PID reuse tests and bounds its own resource consumption.
 - At least 90% of structured-output examples remain backward compatible across minor releases.
@@ -683,12 +768,14 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 | A generic JSON interface hides Terraform/Ansible semantic differences | Keep a canonical envelope plus thin, tested adapters that preserve each platform's native expectations |
 | Terraform external integration is used for side effects | Restrict the adapter to read-only operations and document repeated refresh execution |
 | Spacelift hook checks are confused with native policies | Keep hook gates and OPA/Rego policy integration explicitly separate |
+| Local Rego behavior is assumed identical to hosted Spacelift | Pin/report OPA and profile versions, test documented restrictions, and state the fidelity boundary |
+| Recorded hook/policy fixtures disclose secrets | Allowlist fields, share redaction code, and scan fixtures before persistence |
 | Secret masking creates false confidence | Document that output content may intentionally contain secrets; mask only diagnostics/audit surfaces |
 | Utility names conflict with existing projects | Treat names as working names and perform registry/package/PATH collision review before Milestone 1 release |
 
 ## 14. Naming note
 
-`envsub` is already used by at least one existing package, and `jwalk` is used by existing software and a Rust traversal library. `ports` and `hashsum` are highly generic. Before publishing binaries, the project should perform a naming review covering distribution repositories, Homebrew, language registries, GitHub, and common shell commands. The architecture and plan do not depend on retaining these names.
+`envsub` is already used by at least one existing package, and `jwalk` is used by existing software and a Rust traversal library. `ports` and `hashsum` are highly generic. `spacelift-helper` contains a third-party product name and needs both collision and trademark review. Before publishing binaries, the project should perform a naming review covering distribution repositories, Homebrew, language registries, GitHub, common shell commands, and relevant marks. The architecture and plan do not depend on retaining these names.
 
 ## 15. Immediate backlog
 
@@ -702,6 +789,7 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 8. Establish access to representative BSD and Solaris/illumos test systems before promising release dates.
 9. Implement Milestone 0 and open separate MVP issues for `jwalk`, `envsub`, and `hashsum`.
 10. Build a reference pipeline showing Ansible JSON input, `terraform show -json`, `tfchanges`, and a Spacelift hook gate.
+11. Collect redacted Spacelift policy-input fixtures and define the first `regocheck` compatibility profile.
 
 ## 16. Open decisions
 
@@ -716,3 +804,5 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 - Whether a later optional privileged helper is justified for evidence collection, and how its protocol would be secured.
 - Whether the Ansible collection installs binaries, requires them preinstalled, or supports both modes.
 - Whether the canonical policy finding schema should align with SARIF in addition to the simpler streaming schema.
+- Whether `regocheck` embeds OPA as a Go library, invokes a pinned external binary, or supports both with conformance tests.
+- Whether the Spacelift adapter keeps its product-specific working name or ships under a vendor-neutral hook-helper name.

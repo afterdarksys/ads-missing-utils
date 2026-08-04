@@ -7,7 +7,7 @@ Small, composable command-line tools for DevOps, infrastructure automation, and 
 
 Linux has excellent low-level tools for inspecting files, processes, services, networks, and security controls. What is often missing is a safe, structured way to combine that evidence—or to replace a fragile shell pipeline with a predictable command.
 
-Missing Utils is a planned suite of 22 focused utilities built around two ideas:
+Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 
 - make routine operational work fast, safe, and JSON-native;
 - explain *why* a system behaves as it does, with evidence and explicit uncertainty.
@@ -50,6 +50,8 @@ Missing Utils is a planned suite of 22 focused utilities built around two ideas:
 | `jsonprobe` | Run declarative DNS, TCP, TLS, HTTP, process, port, and filesystem readiness checks. |
 | `jsondiff` | Compare structured desired and observed state with typed paths and machine-readable changes. |
 | `jsongate` | Convert findings into consistent pass, warn, deny, or approval-required decisions. |
+| `spacelift-helper` | Normalize Spacelift hook context, run suite checks, and preserve redacted JSON reports and gate results. |
+| `regocheck` | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift JSON fixtures. |
 
 ## JSON-first automation
 
@@ -67,7 +69,8 @@ Planned integrations include:
 
 - thin Ansible collection modules with native `changed`, `failed`, and check-mode behavior;
 - `terraform show -json`, `terraform.tfvars.json`, and a read-only external-data adapter that accepts and returns Terraform's required string maps, carrying richer typed output in a `result_json` string;
-- Spacelift lifecycle hooks and artifacts, while leaving native policy enforcement in OPA/Rego;
+- `spacelift-helper` for lifecycle-hook context, reports, and gate results, while leaving native policy enforcement in OPA/Rego;
+- `regocheck` for local Rego evaluation, fixture tests, schema checks, and coverage using a pinned OPA-compatible engine;
 - ordinary shell pipelines, CI systems, and JSON-processing tools.
 
 The Terraform external-data adapter will expose observations only. It will not modify infrastructure or local state because Terraform may invoke external data sources repeatedly during refresh. Native Ansible modules and Spacelift examples are planned deliverables, not currently published integrations.
@@ -108,7 +111,7 @@ Development is planned in stages:
 
 1. Shared CLI, schema, error, release, and security foundations.
 2. File and pipeline primitives: `jwalk`, `envsub`, and `hashsum`.
-3. Automation contracts and adapters: `tfchanges`, `varmerge`, `jsonprobe`, and `jsongate`.
+3. Automation contracts and adapters: `tfchanges`, `varmerge`, `jsonprobe`, `jsongate`, `spacelift-helper`, and `regocheck`.
 4. Linux runtime inventory: `ports` and `pwatch`.
 5. First causal diagnostics: `portwhy`, `accesswhy`, and `patchwhy`.
 6. BSD and Solaris-family `ports` backends.
@@ -134,6 +137,7 @@ Useful contributions at this stage include:
 - real operational workflows that currently require fragile pipelines;
 - representative Terraform/OpenTofu plan cases;
 - Ansible and Spacelift integration requirements;
+- redacted Spacelift policy-input fixtures and Rego policy test cases;
 - platform-specific behavior for Linux, BSD, Solaris, and illumos;
 - security boundaries and failure modes the plan should address;
 - benchmark corpora and reproducible test scenarios.
