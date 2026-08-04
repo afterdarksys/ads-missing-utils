@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/afterdarksys/ads-missing-utils/schemas/pwatch-v1.json","type":"object","required":["schema","status","pid","timestamp"],"properties":{"schema":{"const":"missing-utils/pwatch/v1"},"status":{"enum":["ok","exited"]}}}

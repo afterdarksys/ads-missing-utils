@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/afterdarksys/ads-missing-utils/schemas/jsondiff-v1.json","type":"object","required":["schema","outcome","changes"],"properties":{"schema":{"const":"missing-utils/jsondiff/v1"},"outcome":{"enum":["pass","fail"]},"changes":{"type":"array"}}}

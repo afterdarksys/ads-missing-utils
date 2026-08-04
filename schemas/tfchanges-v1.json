@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afterdarksys/ads-missing-utils/schemas/tfchanges-v1.json",
+  "type": "object",
+  "required": ["schema", "status", "address", "actions", "classification"],
+  "properties": {
+    "schema": {"const": "missing-utils/tfchanges/v1"},
+    "status": {"const": "ok"},
+    "address": {"type": "string"},
+    "actions": {"type": "array", "items": {"type": "string"}},
+    "classification": {"enum": ["create", "read", "update", "replace", "delete", "no-op", "unknown"]}
+  }
+}

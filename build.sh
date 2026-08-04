@@ -12,12 +12,13 @@ prefix=/usr/local
 
 usage() {
 	cat <<'EOF'
-Usage: ./build.sh [build] [install] [clean] [prefix=<path>]
+Usage: ./build.sh [target] [prefix=<path>]
 
 Targets:
-  build    Build jwalk, envsub, and hashsum into dist/ (default).
-  install  Build the commands and install them into prefix/bin.
+  build    Build every command in cmd/ into dist/ (default).
+  install  Build every command and install it into prefix/bin.
   clean    Remove generated build output from dist/.
+  help     Show this help text.
 
 Options:
   prefix=<path>  Installation prefix (default: /usr/local).
@@ -31,16 +32,19 @@ EOF
 
 build() {
 	mkdir -p "$bin_dir"
-	"$go_cmd" build -trimpath -o "$bin_dir/jwalk" ./cmd/jwalk
-	"$go_cmd" build -trimpath -o "$bin_dir/envsub" ./cmd/envsub
-	"$go_cmd" build -trimpath -o "$bin_dir/hashsum" ./cmd/hashsum
+	for command_dir in cmd/*; do
+		[ -d "$command_dir" ] || continue
+		command=${command_dir#cmd/}
+		"$go_cmd" build -trimpath -o "$bin_dir/$command" "./$command_dir"
+	done
 }
 
 install_binaries() {
 	build
 	mkdir -p "$prefix/bin"
-	for binary in jwalk envsub hashsum; do
-		install -m 0755 "$bin_dir/$binary" "$prefix/bin/$binary"
+	for binary in "$bin_dir"/*; do
+		[ -f "$binary" ] || continue
+		install -m 0755 "$binary" "$prefix/bin/$(basename "$binary")"
 	done
 }
 
@@ -57,12 +61,21 @@ for argument in "$@"; do
 			exit 2
 		fi
 		;;
-	build|install|clean|-h|--help|help)
+	build|install|clean|help|-h|--help)
 		;;
 	*)
 		echo "build.sh: unknown target or option: $argument" >&2
 		usage >&2
 		exit 2
+		;;
+	esac
+done
+
+for argument in "$@"; do
+	case "$argument" in
+	help|-h|--help)
+		usage
+		exit 0
 		;;
 	esac
 done
@@ -81,9 +94,6 @@ for argument in "$@"; do
 		;;
 	clean)
 		clean
-		;;
-	-h|--help|help)
-		usage
 		;;
 	prefix=*)
 		;;

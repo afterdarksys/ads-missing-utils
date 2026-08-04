@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afterdarksys/ads-missing-utils/schemas/meow-v1.json",
+  "type": "object",
+  "required": ["schema", "outcome"],
+  "properties": {
+    "schema": { "const": "missing-utils/meow/v1" },
+    "outcome": { "enum": ["pass", "fail", "partial", "error"] },
+    "data": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string" },
+        "pitch": { "type": "string" },
+        "volume": { "type": "string" },
+        "frequency": { "type": "number" },
+        "lines_processed": { "type": "integer" },
+        "output": { "type": "string" },
+        "output_lines": { "type": "array", "items": { "type": "string" } },
+        "ascii_art": { "type": "string" }
+      }
+    }
+  }
+}

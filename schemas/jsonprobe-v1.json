@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/afterdarksys/ads-missing-utils/schemas/jsonprobe-v1.json","type":"object","required":["schema","outcome","checks"],"properties":{"schema":{"const":"missing-utils/jsonprobe/v1"},"outcome":{"enum":["pass","fail","partial"]},"checks":{"type":"array"}}}

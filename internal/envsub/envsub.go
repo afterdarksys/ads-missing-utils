@@ -66,7 +66,7 @@ func Run(options Options) (Result, error) {
 	if err != nil {
 		return Result{}, cli.NewError(cli.ExitRuntime, "reading template: %v", err)
 	}
-	schema, err := loadSchema(options.SchemaPath)
+	schema, err := LoadSchema(options.SchemaPath)
 	if err != nil {
 		return Result{}, err
 	}
@@ -148,7 +148,8 @@ func Run(options Options) (Result, error) {
 	return result, nil
 }
 
-func loadSchema(path string) (map[string]Field, error) {
+// LoadSchema parses the shared envsub/varmerge YAML schema format.
+func LoadSchema(path string) (map[string]Field, error) {
 	if path == "" {
 		return map[string]Field{}, nil
 	}
@@ -178,7 +179,7 @@ func loadSchema(path string) (map[string]Field, error) {
 func loadValues(options Options) (map[string]string, map[string]string, map[string]bool, error) {
 	values, sources, supplied := map[string]string{}, map[string]string{}, map[string]bool{}
 	for _, file := range options.EnvFiles {
-		entries, err := parseEnvFile(file)
+		entries, err := ParseEnvFile(file)
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -202,7 +203,9 @@ func loadValues(options Options) (map[string]string, map[string]string, map[stri
 	return values, sources, supplied, nil
 }
 
-func parseEnvFile(path string) (map[string]string, error) {
+// ParseEnvFile parses the intentionally small dotenv subset used by envsub
+// and varmerge. Later declarations in a file replace earlier declarations.
+func ParseEnvFile(path string) (map[string]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, cli.NewError(cli.ExitRuntime, "reading env file %q: %v", path, err)

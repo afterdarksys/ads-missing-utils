@@ -3,7 +3,7 @@
 Small, composable command-line tools for DevOps, infrastructure automation, and security diagnostics.
 
 > [!IMPORTANT]
-> The v1 foundation (`jwalk`, `envsub`, and `hashsum`) is implemented in this repository but has not been released yet. The remaining utilities are planned proposals.
+> Seven roadmap commands (`jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff`) are implemented in this repository but have not been released yet. The other 17 roadmap commands are clearly marked test scaffolds: they build, support `--help` and `--version`, and intentionally return a nonzero status for operational use until implemented.
 
 Linux has excellent low-level tools for inspecting files, processes, services, networks, and security controls. What is often missing is a safe, structured way to combine that evidence—or to replace a fragile shell pipeline with a predictable command.
 
@@ -21,37 +21,38 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `jwalk` | Implemented, unreleased | Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines. |
 | `envsub` | Implemented, unreleased | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. |
 | `hashsum` | Implemented, unreleased | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. |
-| `pwatch` | Planned | Track a process and its descendants, detect resource spikes, and capture opt-in diagnostics. |
-| `ports` | Planned | Produce a uniform process-to-listener map across Linux, BSD, and Solaris-family systems. |
+| `meow` | Implemented, unreleased | Whimsical cat sound text transformer with translation, prefix, emphasis, and pitch controls. |
+| `pwatch` | Implemented, unreleased | Passively sample Linux process state, RSS, and thread count. |
+| `ports` | Implemented, unreleased | Produce a Linux TCP/UDP listener map with best-effort process ownership. |
 
 ### Causal diagnostics
 
-| Command | Question it answers |
-|---|---|
-| `portwhy` | Who owns this port, how was it launched, and where is it reachable? |
-| `accesswhy` | Why can or cannot an identity access this filesystem object? |
-| `patchwhy` | Which processes still use replaced code, and what must restart? |
-| `netwhy` | Which DNS, route, namespace, proxy, and firewall decisions affect this connection? |
-| `servicewhy` | Why is this service unhealthy, restarting, or blocked? |
-| `binarywhy` | Where did this executable come from, and has it changed? |
-| `authwhy` | Which account, group, SSH, PAM, NSS, or policy rule affects login? |
-| `certwhy` | Which certificate and trust path are in use, and why does validation fail? |
-| `expose` | Which services are reachable from each interface or namespace? |
-| `sandboxdiff` | How do two workloads differ in isolation and attack surface? |
-| `driftwhy` | What security-relevant state changed, and what mechanism changed it? |
-| `incidentsnap` | How can a responder collect a redacted, integrity-verifiable host snapshot? |
+| Command | Status | Question it answers |
+|---|---|---|
+| `portwhy` | Implemented, unreleased | Explain visible Linux listener ownership and report partial visibility. |
+| `accesswhy` | Test scaffold | Why can or cannot an identity access this filesystem object? |
+| `patchwhy` | Test scaffold | Which processes still use replaced code, and what must restart? |
+| `netwhy` | Test scaffold | Which DNS, route, namespace, proxy, and firewall decisions affect this connection? |
+| `servicewhy` | Test scaffold | Why is this service unhealthy, restarting, or blocked? |
+| `binarywhy` | Implemented, unreleased | Report executable metadata and a SHA-256 integrity observation. |
+| `authwhy` | Test scaffold | Which account, group, SSH, PAM, NSS, or policy rule affects login? |
+| `certwhy` | Test scaffold | Which certificate and trust path are in use, and why does validation fail? |
+| `expose` | Test scaffold | Which services are reachable from each interface or namespace? |
+| `sandboxdiff` | Test scaffold | How do two workloads differ in isolation and attack surface? |
+| `driftwhy` | Test scaffold | What security-relevant state changed, and what mechanism changed it? |
+| `incidentsnap` | Test scaffold | How can a responder collect a redacted, integrity-verifiable host snapshot? |
 
 ### Automation and infrastructure as code
 
-| Command | Purpose |
-|---|---|
-| `tfchanges` | Normalize Terraform/OpenTofu plan or state JSON into concise resource-change records and risk facts. |
-| `varmerge` | Merge environment, JSON, YAML, and defaults under a typed schema with value provenance. |
-| `jsonprobe` | Run declarative DNS, TCP, TLS, HTTP, process, port, and filesystem readiness checks. |
-| `jsondiff` | Compare structured desired and observed state with typed paths and machine-readable changes. |
-| `jsongate` | Convert findings into consistent pass, warn, deny, or approval-required decisions. |
-| `spacelift-helper` | Normalize Spacelift hook context, run suite checks, and preserve redacted JSON reports and gate results. |
-| `regocheck` | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift JSON fixtures. |
+| Command | Status | Purpose |
+|---|---|---|
+| `tfchanges` | Implemented, unreleased | Normalize Terraform/OpenTofu plan JSON into concise resource-change records and evidence-based risk facts. |
+| `varmerge` | Implemented, unreleased | Merge environment, JSON, YAML, and defaults under a typed schema with value provenance. |
+| `jsonprobe` | Implemented, unreleased | Run declarative TCP, HTTP, process, and filesystem readiness checks. |
+| `jsondiff` | Implemented, unreleased | Compare structured desired and observed state with JSON Pointer paths and machine-readable changes. |
+| `jsongate` | Implemented, unreleased | Convert JSON findings into consistent pass, deny, or approval-required decisions. |
+| `spacelift-helper` | Test scaffold | Normalize Spacelift hook context, run suite checks, and preserve redacted JSON reports and gate results. |
+| `regocheck` | Test scaffold | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift JSON fixtures. |
 
 ## JSON-first automation
 
@@ -94,9 +95,9 @@ terraform show -json tfplan \
 
 The file-manifest example is runnable with the v1 foundation below. The Terraform example remains a proposed contract for the planned automation/IaC track.
 
-## v1 foundation
+## Build, test, and command availability
 
-The implemented, unreleased v1 commands are `jwalk`, `envsub`, and `hashsum`.
+`make build` and `./build.sh build` create all roadmap binaries in `dist/`. This is intentional: it lets package, installation, smoke-test, and shell-completion work exercise the complete command inventory. `jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff` are functional unreleased commands; every other roadmap binary is a test scaffold and describes that status through `--help`.
 
 ```sh
 asdf install # if you use asdf; the project pins Go 1.24.6
@@ -104,15 +105,17 @@ make build
 
 # Or use the standalone build helper.
 ./build.sh build
+./build.sh help
 ./build.sh install prefix="$HOME/.local"
 
+./dist/portwhy --help # planned command scaffold
 ./dist/jwalk ./release --type file --format ndjson
 ./dist/envsub --input app.yaml.tmpl --schema env.schema.yaml --output app.yaml
 ./dist/jwalk ./release --type file | ./dist/hashsum create --from-jwalk --root ./release --output release.hashes.json
 ./dist/hashsum verify --root ./release release.hashes.json
 ```
 
-Run `make test` for unit tests or `make check` for static analysis plus tests. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
+Run `make test` for unit tests, `make check` for static analysis plus tests, or `make help` for Make target help. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
 
 ## Design principles
 
@@ -142,7 +145,7 @@ See [PROJECT_PLAN.md](PROJECT_PLAN.md) for utility specifications, architecture,
 
 ## Current status
 
-The repository contains a Go 1.24+ implementation of the v1 foundation, its schemas, tests, CI, and release configuration. Linux is the primary platform; the v1 file/configuration commands also build on macOS and Windows. The remaining planned utilities have platform support described in the project plan.
+The repository contains a Go 1.24+ implementation of the v1 foundation plus four portable automation commands, their schemas, tests, CI, and release configuration. Linux is the primary platform; the file/configuration and automation commands also build on macOS and Windows. The 17 scaffold commands compile on those platforms for packaging and integration testing; their final platform support is described in the project plan.
 
 The next milestone is an unreleased v1 validation period for command contracts and packaging, followed by the automation/IaC track.
 

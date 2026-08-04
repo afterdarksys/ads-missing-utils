@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/afterdarksys/ads-missing-utils/schemas/ports-v1.json","type":"object","required":["schema","transport","local_port","visibility"],"properties":{"schema":{"const":"missing-utils/ports/v1"},"transport":{"enum":["tcp","udp"]},"visibility":{"enum":["complete","partial"]}}}

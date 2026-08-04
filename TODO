@@ -1,0 +1,16 @@
+# For OSX Specifically, but could work on Linux too
+
+ripgrep (rg): A line-oriented search tool that recursively searches directories for a regex pattern, vastly faster than grep.
+fd: A simple, fast, and user-friendly alternative to the traditional find command.
+sd: An intuitive alternative to sed for regex-based text replacement.
+hyperfine: A command-line benchmarking tool to test the execution speed of shell commands.
+trippy or trip: A modern combination of traceroute and ping with interactive network analysis.
+bandwhich: A CLI utility for displaying current network utilization by process, connection, and remote IP.
+dua-cli: A tool to view disk space usage and clean up deep directories faster than du
+uf: A colorful, intuitive disk usage/free utility that replaces standard df.
+procs: A modern replacement for ps with colored output, search, and tree view.
+
+# For AI
+(laicd) - Local AI Context Daemon: A lightweight CLI tool that indexes local git repos, man pages, and configs to pipe contextual terminal suggestions offline without hitting external APIs.
+(icpsr) - Instant Cross-Platform Sandbox Runner: A native command to spin up isolated, ephemeral micro-VM environments instantly from any CLI script without heavy container overhead.(laicd) - 
+
