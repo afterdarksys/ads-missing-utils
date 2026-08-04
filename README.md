@@ -31,14 +31,14 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 |---|---|---|
 | `portwhy` | Implemented, unreleased | Explain visible Linux listener ownership and report partial visibility. |
 | `accesswhy` | Implemented, unreleased | Report path mode and local identity evidence, with explicit access-control gaps. |
-| `patchwhy` | Test scaffold | Which processes still use replaced code, and what must restart? |
-| `netwhy` | Test scaffold | Which DNS, route, namespace, proxy, and firewall decisions affect this connection? |
-| `servicewhy` | Test scaffold | Why is this service unhealthy, restarting, or blocked? |
+| `patchwhy` | Implemented, unreleased | Capture a current binary/library identity for restart analysis. |
+| `netwhy` | Implemented, unreleased | Collect DNS resolution evidence for a destination. |
+| `servicewhy` | Implemented, unreleased | Collect passive process-health evidence for a service PID. |
 | `binarywhy` | Implemented, unreleased | Report executable metadata and a SHA-256 integrity observation. |
 | `authwhy` | Implemented, unreleased | Report local account and group evidence, with explicit authentication-policy gaps. |
 | `certwhy` | Implemented, unreleased | Inspect a live TLS peer certificate and validation result. |
 | `expose` | Implemented, unreleased | Report local listener exposure, with explicit firewall/reachability gaps. |
-| `sandboxdiff` | Test scaffold | How do two workloads differ in isolation and attack surface? |
+| `sandboxdiff` | Implemented, unreleased | Compare two JSON workload snapshots. |
 | `driftwhy` | Implemented, unreleased | Capture a current file-content fingerprint for later drift comparison. |
 | `incidentsnap` | Implemented, unreleased | Capture a minimal read-only host identity snapshot. |
 
@@ -51,8 +51,8 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `jsonprobe` | Implemented, unreleased | Run declarative TCP, HTTP, process, and filesystem readiness checks. |
 | `jsondiff` | Implemented, unreleased | Compare structured desired and observed state with JSON Pointer paths and machine-readable changes. |
 | `jsongate` | Implemented, unreleased | Convert JSON findings into consistent pass, deny, or approval-required decisions. |
-| `spacelift-helper` | Test scaffold | Normalize Spacelift hook context, run suite checks, and preserve redacted JSON reports and gate results. |
-| `regocheck` | Test scaffold | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift JSON fixtures. |
+| `spacelift-helper` | Implemented, unreleased | Normalize allowlisted Spacelift hook context. |
+| `regocheck` | Implemented, unreleased | Detect a local OPA engine and report policy-evaluation readiness. |
 
 ## JSON-first automation
 
