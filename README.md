@@ -102,6 +102,10 @@ The implemented, unreleased v1 commands are `jwalk`, `envsub`, and `hashsum`.
 asdf install # if you use asdf; the project pins Go 1.24.6
 make build
 
+# Or use the standalone build helper.
+./build.sh build
+./build.sh install prefix="$HOME/.local"
+
 ./dist/jwalk ./release --type file --format ndjson
 ./dist/envsub --input app.yaml.tmpl --schema env.schema.yaml --output app.yaml
 ./dist/jwalk ./release --type file | ./dist/hashsum create --from-jwalk --root ./release --output release.hashes.json
