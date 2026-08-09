@@ -1,0 +1,8 @@
+[submodule "codedetective"]
+	path = contrib/codedetective
+	url = https://github.com/afterdarksys/ads-codedetective.git
+	branch = main
+[submodule "vibedetector"]
+	path = contrib/vibedetector
+	url = https://github.com/afterdarksys/vibedetector.git
+	branch = main

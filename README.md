@@ -2,6 +2,10 @@
 
 Small, composable command-line tools for DevOps, infrastructure automation, and security diagnostics.
 
+The repository also includes four functional macOS-oriented research commands:
+`homestate`, `metascore`, `pll`, and `bundleinfo`. Their completion status and
+remaining research backlog are tracked in [IDEAS.md](IDEAS.md).
+
 > [!IMPORTANT]
 > Seven roadmap commands (`jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff`) are implemented in this repository but have not been released yet. The other 17 roadmap commands are clearly marked test scaffolds: they build, support `--help` and `--version`, and intentionally return a nonzero status for operational use until implemented.
 
@@ -24,6 +28,15 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `meow` | Implemented, unreleased | Whimsical cat sound text transformer with translation, prefix, emphasis, and pitch controls. |
 | `pwatch` | Implemented, unreleased | Passively sample Linux process state, RSS, and thread count. |
 | `ports` | Implemented, unreleased | Produce a Linux TCP/UDP listener map with best-effort process ownership. |
+
+### macOS filesystem and bundle research
+
+| Command | Status | Purpose |
+|---|---|---|
+| `homestate` | Implemented, unreleased | Index a home or mapped directory, report changes and moves, and safely repair or restore problematic names. |
+| `metascore` | Implemented, unreleased MVP | Score file metadata and extended-attribute-name changes against a saved baseline. |
+| `pll` | Implemented, unreleased MVP | Lint XML property lists and flag malformed or risky launchd logic. |
+| `bundleinfo` | Implemented, unreleased MVP | Inventory `.app` and `.pkg` structure and metadata without executing bundle contents. |
 
 ### Causal diagnostics
 
@@ -116,6 +129,33 @@ make build
 ```
 
 Run `make test` for unit tests, `make check` for static analysis plus tests, or `make help` for Make target help. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
+
+## Contributed companion tools
+
+The `contrib/` directory links companion security utilities as Git submodules:
+
+- [`contrib/codedetective`](contrib/codedetective) links [`afterdarksys/ads-codedetective`](https://github.com/afterdarksys/ads-codedetective).
+- [`contrib/vibedetector`](contrib/vibedetector) links [`afterdarksys/vibedetector`](https://github.com/afterdarksys/vibedetector).
+
+These tools cover adjacent AI-era application hygiene checks that are useful to run alongside Missing Utils without folding every scanner into this repository. Modern AI-assisted and rapidly generated applications often leak sensitive implementation details directly into browser-visible surfaces: bundled environment values, API keys, sourcemaps, backend route names, verbose build metadata, embedded prompts, model/provider configuration, and assumptions that should only exist server-side. The contributed tools are linked here so those checks can be pulled into a working tree when needed while still retaining their own release cycles, issue trackers, and implementation boundaries.
+
+Clone this repository with submodules to fetch those tools at the recorded commits:
+
+```sh
+git clone --recurse-submodules https://github.com/afterdarksys/ads-missing-utils.git
+```
+
+For an existing checkout, initialize the contributed tools with:
+
+```sh
+make contrib
+```
+
+To refresh the contributed tools from their `main` branches and record the new commits in this repository, run:
+
+```sh
+make contrib-update
+```
 
 ## Design principles
 
