@@ -17,11 +17,11 @@ $(BIN_DIR):
 	mkdir -p $@
 
 test:
-	$(GO) test ./...
+	$(GO) test ./cmd/... ./internal/... ./tests
 
 check:
-	$(GO) vet ./...
-	$(GO) test ./...
+	$(GO) vet ./cmd/... ./internal/... ./tests
+	$(GO) test ./cmd/... ./internal/... ./tests
 
 contrib:
 	git submodule update --init --recursive

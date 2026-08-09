@@ -50,7 +50,7 @@ func run(args []string) int {
 		if err := macossec.SaveBaseline(*state, baseline); err != nil {
 			return fail(err)
 		}
-		return write(map[string]any{"schema": "missing-utils/dtp/v1", "outcome": "pass", "entries": len(baseline.Entries), "state": *state})
+		return write(map[string]any{"schema": "missing-utils/dtp/v1", "outcome": "pass", "entries": len(baseline.Entries), "scan_errors": baseline.ScanErrors, "state": *state})
 	}
 	baseline, err := macossec.LoadBaseline(*state)
 	if err != nil {

@@ -129,11 +129,16 @@ func QuarantineCandidates(report CLTReport, dest string) ([]string, error) {
 }
 
 type SignedBaseline struct {
-	Schema    string            `json:"schema"`
-	Root      string            `json:"root"`
-	CreatedAt string            `json:"created_at"`
-	Entries   map[string]string `json:"entries"`
-	Signature string            `json:"signature"`
+	Schema     string              `json:"schema"`
+	Root       string              `json:"root"`
+	CreatedAt  string              `json:"created_at"`
+	Entries    map[string]string   `json:"entries"`
+	ScanErrors []BaselineScanError `json:"scan_errors,omitempty"`
+	Signature  string              `json:"signature"`
+}
+type BaselineScanError struct {
+	Path    string `json:"path"`
+	Message string `json:"message"`
 }
 type DTPChange struct {
 	Status string `json:"status"`
@@ -141,24 +146,40 @@ type DTPChange struct {
 }
 
 func CreateDaemonBaseline(root string, key []byte) (SignedBaseline, error) {
-	if len(key) < 16 {
-		return SignedBaseline{}, fmt.Errorf("key must contain at least 16 bytes")
+	if err := validateBaselineKey(key); err != nil {
+		return SignedBaseline{}, err
 	}
-	entries, err := executableHashes(root)
+	entries, scanErrors, err := executableHashes(root)
 	if err != nil {
 		return SignedBaseline{}, err
 	}
-	b := SignedBaseline{Schema: "missing-utils/dtp-state/v1", Root: root, CreatedAt: time.Now().UTC().Format(time.RFC3339Nano), Entries: entries}
-	b.Signature = signBaseline(b, key)
+	b := SignedBaseline{Schema: "missing-utils/dtp-state/v1", Root: root, CreatedAt: time.Now().UTC().Format(time.RFC3339Nano), Entries: entries, ScanErrors: scanErrors}
+	b.Signature, err = signBaseline(b, key)
+	if err != nil {
+		return SignedBaseline{}, err
+	}
 	return b, nil
 }
 func CheckDaemonBaseline(b SignedBaseline, key []byte) ([]DTPChange, error) {
-	if !hmac.Equal([]byte(b.Signature), []byte(signBaseline(b, key))) {
-		return nil, fmt.Errorf("baseline signature verification failed")
+	if err := validateBaselineKey(key); err != nil {
+		return nil, err
 	}
-	live, err := executableHashes(b.Root)
+	expectedSignature, err := signBaseline(b, key)
 	if err != nil {
 		return nil, err
+	}
+	if !hmac.Equal([]byte(b.Signature), []byte(expectedSignature)) {
+		return nil, fmt.Errorf("baseline signature verification failed")
+	}
+	if len(b.ScanErrors) > 0 {
+		return nil, fmt.Errorf("baseline contains unreadable paths: %s", formatBaselineScanErrors(b.ScanErrors))
+	}
+	live, scanErrors, err := executableHashes(b.Root)
+	if err != nil {
+		return nil, err
+	}
+	if len(scanErrors) > 0 {
+		return nil, fmt.Errorf("daemon scan found unreadable paths: %s", formatBaselineScanErrors(scanErrors))
 	}
 	changes := []DTPChange{}
 	for path, digest := range b.Entries {
@@ -398,43 +419,79 @@ func ScanWebKit(root string) (WebKitReport, error) {
 	return report, err
 }
 
-func executableHashes(root string) (map[string]string, error) {
+func executableHashes(root string) (map[string]string, []BaselineScanError, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	entries := map[string]string{}
+	scanErrors := []BaselineScanError{}
 	err = filepath.WalkDir(root, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			return walkErr
+			if path == root {
+				return walkErr
+			}
+			scanErrors = append(scanErrors, baselineScanError(root, path, walkErr))
+			if d != nil && d.IsDir() {
+				return fs.SkipDir
+			}
+			return nil
 		}
 		if d.IsDir() {
 			return nil
 		}
 		info, err := d.Info()
 		if err != nil {
-			return err
+			scanErrors = append(scanErrors, baselineScanError(root, path, err))
+			return nil
 		}
 		if !info.Mode().IsRegular() || info.Mode().Perm()&0o111 == 0 {
 			return nil
 		}
 		digest, err := hashFile(path)
 		if err != nil {
-			return err
+			scanErrors = append(scanErrors, baselineScanError(root, path, err))
+			return nil
 		}
 		rel, _ := filepath.Rel(root, path)
 		entries[filepath.ToSlash(rel)] = digest
 		return nil
 	})
-	return entries, err
+	sort.Slice(scanErrors, func(i, j int) bool { return scanErrors[i].Path < scanErrors[j].Path })
+	return entries, scanErrors, err
 }
-func signBaseline(b SignedBaseline, key []byte) string {
+func signBaseline(b SignedBaseline, key []byte) (string, error) {
 	clone := b
 	clone.Signature = ""
-	data, _ := json.Marshal(clone)
+	data, err := json.Marshal(clone)
+	if err != nil {
+		return "", fmt.Errorf("marshal baseline for signing: %w", err)
+	}
 	mac := hmac.New(sha256.New, key)
-	mac.Write(data)
-	return hex.EncodeToString(mac.Sum(nil))
+	if _, err := mac.Write(data); err != nil {
+		return "", fmt.Errorf("sign baseline: %w", err)
+	}
+	return hex.EncodeToString(mac.Sum(nil)), nil
+}
+func validateBaselineKey(key []byte) error {
+	if len(key) < 16 {
+		return fmt.Errorf("key must contain at least 16 bytes")
+	}
+	return nil
+}
+func baselineScanError(root, path string, err error) BaselineScanError {
+	rel, relErr := filepath.Rel(root, path)
+	if relErr != nil {
+		rel = path
+	}
+	return BaselineScanError{Path: filepath.ToSlash(rel), Message: err.Error()}
+}
+func formatBaselineScanErrors(scanErrors []BaselineScanError) string {
+	items := make([]string, 0, len(scanErrors))
+	for _, scanErr := range scanErrors {
+		items = append(items, fmt.Sprintf("%s (%s)", scanErr.Path, scanErr.Message))
+	}
+	return strings.Join(items, "; ")
 }
 func hashFile(path string) (string, error) {
 	file, err := os.Open(path)

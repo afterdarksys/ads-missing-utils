@@ -12,7 +12,7 @@ import (
 	"github.com/afterdarksys/ads-missing-utils/internal/meow"
 )
 
-func main() { os.Exit(run()) }
+func main() { os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr)) }
 
 func printUsage(w io.Writer) {
 	fmt.Fprint(w, `meow - playful cat sound text transformer utility
@@ -61,7 +61,64 @@ EXAMPLES:
 `)
 }
 
-func run() int {
+type commandConfig struct {
+	options   meow.Options
+	inputPath string
+	format    string
+	arguments []string
+	help      bool
+	version   bool
+}
+
+type rawCommandOptions struct {
+	help, helpLong, version bool
+	translate, tShort       bool
+	prefix, pfxShort        bool
+	prefixText              string
+	emphasis, eShort        bool
+	keyWalk, kShort         bool
+	suffix, sfxShort        bool
+	suffixText              string
+	ascii, asciiAlt         bool
+	pitch, pitchShort       string
+	volStr                  string
+	vBool, volBool          bool
+	freq                    float64
+	inputPath, format       string
+	seed                    int64
+}
+
+func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	config, err := parseCommand(args, stderr)
+	if err != nil {
+		fmt.Fprintf(stderr, "error: %v\n", err)
+		return cli.ExitUsage
+	}
+	if config.help {
+		printUsage(stdout)
+		return cli.ExitOK
+	}
+	if config.version {
+		fmt.Fprintln(stdout, cli.Version)
+		return cli.ExitOK
+	}
+
+	res, closer, err := transform(config, stdin)
+	if closer != nil {
+		defer closer.Close()
+	}
+	if err != nil {
+		fmt.Fprintf(stderr, "error: %v\n", err)
+		return cli.ExitCode(err)
+	}
+	if err := writeOutput(stdout, config.format, res); err != nil {
+		fmt.Fprintf(stderr, "error writing output: %v\n", err)
+		return cli.ExitRuntime
+	}
+	return cli.ExitOK
+}
+
+func parseCommand(rawArgs []string, stderr io.Writer) (commandConfig, error) {
 	valueFlags := map[string]bool{
 		"-i": true, "--input": true,
 		"-p": true, "--pitch": true,
@@ -72,169 +129,131 @@ func run() int {
 		"--format": true, "--seed": true,
 	}
 
-	rawArgs := os.Args[1:]
 	args := cli.ReorderInterspersed(rawArgs, valueFlags)
 
 	fs := flag.NewFlagSet("meow", flag.ContinueOnError)
-	fs.SetOutput(os.Stderr)
-	fs.Usage = func() { printUsage(os.Stderr) }
+	fs.SetOutput(stderr)
+	fs.Usage = func() { printUsage(stderr) }
 
-	var (
-		help, helpLong    bool
-		version           bool
-		translate, tShort bool
-		prefix, pfxShort  bool
-		prefixText        string
-		emphasis, eShort  bool
-		keyWalk, kShort   bool
-		suffix, sfxShort  bool
-		suffixText        string
-		ascii, asciiAlt   bool
-		pitch, pitchShort string
-		volStr            string
-		vBool, volBool    bool
-		freq              float64
-		inputPath         string
-		format            string
-		seed              int64
-	)
-
-	fs.BoolVar(&help, "h", false, "Show help")
-	fs.BoolVar(&helpLong, "help", false, "Show help")
-	fs.BoolVar(&version, "version", false, "Print version")
-
-	fs.BoolVar(&translate, "translate", false, "Enable translation mode")
-	fs.BoolVar(&tShort, "t", false, "Enable translation mode")
-
-	fs.BoolVar(&prefix, "prefix", false, "Enable prefix mode")
-	fs.BoolVar(&pfxShort, "P", false, "Enable prefix mode")
-	fs.StringVar(&prefixText, "prefix-text", "", "Custom prefix text")
-
-	fs.BoolVar(&emphasis, "emphasis", false, "Enable emphasis mode")
-	fs.BoolVar(&eShort, "e", false, "Enable emphasis mode")
-
-	fs.BoolVar(&keyWalk, "keyboard-walk", false, "Enable cat keyboard-walk mode")
-	fs.BoolVar(&kShort, "k", false, "Enable cat keyboard-walk mode")
-	fs.BoolVar(&keyWalk, "zoomies", false, "Enable cat keyboard-walk mode")
-
-	fs.BoolVar(&suffix, "suffix", false, "Enable suffix mode")
-	fs.BoolVar(&sfxShort, "s", false, "Enable suffix mode")
-	fs.StringVar(&suffixText, "suffix-text", "", "Custom suffix text")
-
-	fs.StringVar(&pitch, "pitch", "normal", "Cat voice style")
-	fs.StringVar(&pitchShort, "p", "", "Cat voice style")
-
-	fs.StringVar(&volStr, "volume", "", "Volume level (normal, loud)")
-	fs.BoolVar(&vBool, "v", false, "Loud volume (ALL CAPS)")
-	fs.BoolVar(&volBool, "loud", false, "Loud volume (ALL CAPS)")
-
-	fs.Float64Var(&freq, "frequency", 0.3, "Injection frequency (0.0-1.0)")
-	fs.Float64Var(&freq, "f", 0.3, "Injection frequency (0.0-1.0)")
-
-	fs.StringVar(&inputPath, "input", "", "Input file path")
-	fs.StringVar(&inputPath, "i", "", "Input file path")
-
-	fs.StringVar(&format, "format", "text", "Output format (text, json, ndjson)")
-	fs.BoolVar(&ascii, "ascii", false, "Show ASCII cat art")
-	fs.BoolVar(&asciiAlt, "cat", false, "Show ASCII cat art")
-	fs.Int64Var(&seed, "seed", 0, "RNG seed")
+	var raw rawCommandOptions
+	bindFlags(fs, &raw)
 
 	if err := fs.Parse(args); err != nil {
 		if err == flag.ErrHelp {
-			printUsage(os.Stdout)
-			return cli.ExitOK
+			return commandConfig{help: true}, nil
 		}
-		return cli.ExitUsage
+		return commandConfig{}, err
 	}
 
-	if help || helpLong {
-		printUsage(os.Stdout)
-		return cli.ExitOK
-	}
+	return resolveCommand(raw, fs.Args())
+}
 
-	if version {
-		fmt.Println(cli.Version)
-		return cli.ExitOK
-	}
+func bindFlags(fs *flag.FlagSet, raw *rawCommandOptions) {
+	fs.BoolVar(&raw.help, "h", false, "Show help")
+	fs.BoolVar(&raw.helpLong, "help", false, "Show help")
+	fs.BoolVar(&raw.version, "version", false, "Print version")
+	fs.BoolVar(&raw.translate, "translate", false, "Enable translation mode")
+	fs.BoolVar(&raw.tShort, "t", false, "Enable translation mode")
+	fs.BoolVar(&raw.prefix, "prefix", false, "Enable prefix mode")
+	fs.BoolVar(&raw.pfxShort, "P", false, "Enable prefix mode")
+	fs.StringVar(&raw.prefixText, "prefix-text", "", "Custom prefix text")
+	fs.BoolVar(&raw.emphasis, "emphasis", false, "Enable emphasis mode")
+	fs.BoolVar(&raw.eShort, "e", false, "Enable emphasis mode")
+	fs.BoolVar(&raw.keyWalk, "keyboard-walk", false, "Enable cat keyboard-walk mode")
+	fs.BoolVar(&raw.kShort, "k", false, "Enable cat keyboard-walk mode")
+	fs.BoolVar(&raw.keyWalk, "zoomies", false, "Enable cat keyboard-walk mode")
+	fs.BoolVar(&raw.suffix, "suffix", false, "Enable suffix mode")
+	fs.BoolVar(&raw.sfxShort, "s", false, "Enable suffix mode")
+	fs.StringVar(&raw.suffixText, "suffix-text", "", "Custom suffix text")
+	fs.StringVar(&raw.pitch, "pitch", "normal", "Cat voice style")
+	fs.StringVar(&raw.pitchShort, "p", "", "Cat voice style")
+	fs.StringVar(&raw.volStr, "volume", "", "Volume level (normal, loud)")
+	fs.BoolVar(&raw.vBool, "v", false, "Loud volume (ALL CAPS)")
+	fs.BoolVar(&raw.volBool, "loud", false, "Loud volume (ALL CAPS)")
+	fs.Float64Var(&raw.freq, "frequency", 0.3, "Injection frequency (0.0-1.0)")
+	fs.Float64Var(&raw.freq, "f", 0.3, "Injection frequency (0.0-1.0)")
+	fs.StringVar(&raw.inputPath, "input", "", "Input file path")
+	fs.StringVar(&raw.inputPath, "i", "", "Input file path")
+	fs.StringVar(&raw.format, "format", "text", "Output format (text, json, ndjson)")
+	fs.BoolVar(&raw.ascii, "ascii", false, "Show ASCII cat art")
+	fs.BoolVar(&raw.asciiAlt, "cat", false, "Show ASCII cat art")
+	fs.Int64Var(&raw.seed, "seed", 0, "RNG seed")
+}
 
-	// Resolve aliased flags
-	isTranslate := translate || tShort
-	isPrefix := prefix || pfxShort || prefixText != ""
-	isEmphasis := emphasis || eShort
-	isKeyWalk := keyWalk || kShort
-	isSuffix := suffix || sfxShort || suffixText != ""
-	showAscii := ascii || asciiAlt
-
-	resolvedPitch := pitch
-	if pitchShort != "" {
-		resolvedPitch = pitchShort
-	}
-
-	resolvedVolume := meow.VolumeNormal
-	if vBool || volBool || strings.EqualFold(volStr, "loud") || strings.EqualFold(volStr, "caps") || volStr == "true" {
-		resolvedVolume = meow.VolumeLoud
-	}
-
-	if seed == 0 {
-		seed = time.Now().UnixNano()
-	}
-
-	format = strings.ToLower(format)
+func resolveCommand(raw rawCommandOptions, arguments []string) (commandConfig, error) {
+	format := strings.ToLower(raw.format)
 	if format != "text" && format != "json" && format != "ndjson" {
-		fmt.Fprintln(os.Stderr, "error: --format must be 'text', 'json', or 'ndjson'")
-		return cli.ExitUsage
+		return commandConfig{}, fmt.Errorf("--format must be 'text', 'json', or 'ndjson'")
+	}
+	pitch := raw.pitch
+	if raw.pitchShort != "" {
+		pitch = raw.pitchShort
+	}
+	volume := meow.VolumeNormal
+	if raw.vBool || raw.volBool || strings.EqualFold(raw.volStr, "loud") || strings.EqualFold(raw.volStr, "caps") || raw.volStr == "true" {
+		volume = meow.VolumeLoud
 	}
 
-	var reader io.Reader
-	var inputText string
+	return commandConfig{
+		options: meow.Options{
+			InputPath:    raw.inputPath,
+			Translate:    raw.translate || raw.tShort,
+			Prefix:       raw.prefix || raw.pfxShort || raw.prefixText != "",
+			PrefixString: raw.prefixText,
+			Emphasis:     raw.emphasis || raw.eShort,
+			KeyboardWalk: raw.keyWalk || raw.kShort,
+			Suffix:       raw.suffix || raw.sfxShort || raw.suffixText != "",
+			SuffixString: raw.suffixText,
+			Pitch:        pitch,
+			Volume:       volume,
+			Frequency:    raw.freq,
+			Format:       format,
+			Seed:         raw.seed,
+			ShowAscii:    raw.ascii || raw.asciiAlt,
+		},
+		inputPath: raw.inputPath,
+		format:    format,
+		arguments: arguments,
+		help:      raw.help || raw.helpLong,
+		version:   raw.version,
+	}, nil
+}
 
-	remainingArgs := fs.Args()
-	if len(remainingArgs) > 0 {
-		inputText = strings.Join(remainingArgs, " ")
-	} else if inputPath != "" {
-		f, err := os.Open(inputPath)
+func transform(config commandConfig, stdin io.Reader) (*meow.Result, io.Closer, error) {
+	opts := config.options
+	if opts.Seed == 0 {
+		opts.Seed = time.Now().UnixNano()
+	}
+	var closer io.Closer
+	switch {
+	case len(config.arguments) > 0:
+		opts.InputText = strings.Join(config.arguments, " ")
+	case config.inputPath != "":
+		file, err := os.Open(config.inputPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error opening input file: %v\n", err)
-			return cli.ExitFailure
+			return nil, nil, cli.NewError(cli.ExitFailure, "open input file: %v", err)
 		}
-		defer f.Close()
-		reader = f
-	} else {
-		// Check stdin
-		stat, _ := os.Stdin.Stat()
-		if (stat.Mode() & os.ModeCharDevice) == 0 {
-			reader = os.Stdin
-		} else {
-			// No stdin stream provided, use empty input text or cat sample if default
-			inputText = "meow"
-		}
+		opts.InputReader = file
+		closer = file
+	case isTerminal(stdin):
+		opts.InputText = "meow"
+	default:
+		opts.InputReader = stdin
 	}
-
-	opts := meow.Options{
-		InputReader:  reader,
-		InputText:    inputText,
-		InputPath:    inputPath,
-		Translate:    isTranslate,
-		Prefix:       isPrefix,
-		PrefixString: prefixText,
-		Emphasis:     isEmphasis,
-		KeyboardWalk: isKeyWalk,
-		Suffix:       isSuffix,
-		SuffixString: suffixText,
-		Pitch:        resolvedPitch,
-		Volume:       resolvedVolume,
-		Frequency:    freq,
-		Format:       format,
-		Seed:         seed,
-		ShowAscii:    showAscii,
-	}
-
 	res, err := meow.Transform(opts)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error transforming text: %v\n", err)
-		return cli.ExitRuntime
-	}
+	return res, closer, err
+}
 
+func isTerminal(reader io.Reader) bool {
+	file, ok := reader.(*os.File)
+	if !ok {
+		return false
+	}
+	stat, err := file.Stat()
+	return err == nil && stat.Mode()&os.ModeCharDevice != 0
+}
+
+func writeOutput(stdout io.Writer, format string, res *meow.Result) error {
 	switch format {
 	case "json":
 		resp := cli.Response[*meow.Result]{
@@ -243,9 +262,7 @@ func run() int {
 			Outcome: "pass",
 			Data:    res,
 		}
-		if err := cli.WriteJSON(os.Stdout, resp); err != nil {
-			return cli.ExitRuntime
-		}
+		return cli.WriteJSON(stdout, resp)
 	case "ndjson":
 		for _, line := range res.OutputLines {
 			lineRes := struct {
@@ -257,16 +274,18 @@ func run() int {
 				Command: "meow",
 				Line:    line,
 			}
-			if err := cli.WriteJSON(os.Stdout, lineRes); err != nil {
-				return cli.ExitRuntime
+			if err := cli.WriteJSON(stdout, lineRes); err != nil {
+				return err
 			}
 		}
 	default:
 		if res.AsciiArt != "" {
-			fmt.Print(res.AsciiArt)
+			if _, err := fmt.Fprint(stdout, res.AsciiArt); err != nil {
+				return err
+			}
 		}
-		fmt.Println(res.Output)
+		_, err := fmt.Fprintln(stdout, res.Output)
+		return err
 	}
-
-	return cli.ExitOK
+	return nil
 }

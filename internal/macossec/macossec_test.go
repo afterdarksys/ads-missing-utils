@@ -3,6 +3,7 @@ package macossec
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -42,6 +43,59 @@ func TestDTPRejectsTamperAndReportsChange(t *testing.T) {
 	baseline.Signature = "bad"
 	if _, err := CheckDaemonBaseline(baseline, key); err == nil {
 		t.Fatal("tamper accepted")
+	}
+}
+func TestDTPRejectsInvalidVerificationKeysAndSignatures(t *testing.T) {
+	root := t.TempDir()
+	put(t, filepath.Join(root, "daemon"), "one", 0o755)
+	key := []byte("0123456789abcdef")
+	baseline, err := CreateDaemonBaseline(root, key)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		name      string
+		key       []byte
+		signature string
+	}{
+		{name: "wrong key", key: []byte("fedcba9876543210"), signature: baseline.Signature},
+		{name: "empty key", key: nil, signature: baseline.Signature},
+		{name: "truncated signature", key: key, signature: baseline.Signature[:12]},
+		{name: "garbage signature", key: key, signature: "not-a-signature"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			candidate := baseline
+			candidate.Signature = tt.signature
+			if _, err := CheckDaemonBaseline(candidate, tt.key); err == nil {
+				t.Fatal("invalid baseline verification accepted")
+			}
+		})
+	}
+
+	if _, err := CreateDaemonBaseline(root, nil); err == nil {
+		t.Fatal("baseline creation accepted an empty key")
+	}
+}
+func TestDTPRecordsUnreadableExecutableAndFailsClosed(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "unreadable-daemon")
+	put(t, path, "secret", 0o111)
+
+	key := []byte("0123456789abcdef")
+	baseline, err := CreateDaemonBaseline(root, key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(baseline.ScanErrors) == 0 {
+		t.Skip("current user can read mode-0111 files")
+	}
+	if baseline.ScanErrors[0].Path != "unreadable-daemon" {
+		t.Fatalf("scan errors = %#v", baseline.ScanErrors)
+	}
+	if _, err := CheckDaemonBaseline(baseline, key); err == nil || !strings.Contains(err.Error(), "unreadable-daemon") {
+		t.Fatalf("check error = %v, want unreadable path", err)
 	}
 }
 func TestTrackerReportsVanishedProcess(t *testing.T) {
