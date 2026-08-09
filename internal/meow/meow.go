@@ -29,7 +29,7 @@ type Options struct {
 	InputReader  io.Reader
 	InputText    string
 	InputPath    string
-	Mode         string  // "translate", "prefix", "emphasis", "default"
+	Mode         string // "translate", "prefix", "emphasis", "default"
 	Translate    bool
 	Prefix       bool
 	PrefixString string
@@ -59,13 +59,13 @@ type Result struct {
 
 // PitchVocabulary defines cat sounds for a specific pitch.
 type PitchVocabulary struct {
-	Short    []string
-	Medium   []string
-	Long     []string
-	Purrs    []string
-	Prefix   string
-	Suffix   string
-	Walks    []string
+	Short  []string
+	Medium []string
+	Long   []string
+	Purrs  []string
+	Prefix string
+	Suffix string
+	Walks  []string
 }
 
 var vocabularies = map[string]PitchVocabulary{

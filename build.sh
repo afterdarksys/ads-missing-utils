@@ -16,6 +16,9 @@ Usage: ./build.sh [target] [prefix=<path>]
 
 Targets:
   build    Build every command in cmd/ into dist/ (default).
+  test     Test every project-owned command, internal package, and integration test.
+  check    Run gofmt verification, go vet, and the complete project test suite.
+  list     List every command that build and install operate on.
   install  Build every command and install it into prefix/bin.
   clean    Remove generated build output from dist/.
   help     Show this help text.
@@ -25,6 +28,8 @@ Options:
 
 Examples:
   ./build.sh build
+  ./build.sh check
+  ./build.sh list
   ./build.sh install prefix="$HOME/.local"
   ./build.sh clean
 EOF
@@ -37,6 +42,28 @@ build() {
 		command=${command_dir#cmd/}
 		"$go_cmd" build -trimpath -o "$bin_dir/$command" "./$command_dir"
 	done
+}
+
+list_commands() {
+	for command_dir in cmd/*; do
+		[ -d "$command_dir" ] || continue
+		basename "$command_dir"
+	done
+}
+
+test_project() {
+	"$go_cmd" test ./cmd/... ./internal/... ./tests
+}
+
+check_project() {
+	unformatted=$(gofmt -l cmd internal tests)
+	if [ -n "$unformatted" ]; then
+		echo "build.sh: gofmt required for:" >&2
+		echo "$unformatted" >&2
+		return 1
+	fi
+	"$go_cmd" vet ./cmd/... ./internal/... ./tests
+	test_project
 }
 
 install_binaries() {
@@ -61,7 +88,7 @@ for argument in "$@"; do
 			exit 2
 		fi
 		;;
-	build|install|clean|help|-h|--help)
+	build|test|check|list|install|clean|help|-h|--help)
 		;;
 	*)
 		echo "build.sh: unknown target or option: $argument" >&2
@@ -88,6 +115,15 @@ for argument in "$@"; do
 	case "$argument" in
 	build)
 		build
+		;;
+	test)
+		test_project
+		;;
+	check)
+		check_project
+		;;
+	list)
+		list_commands
 		;;
 	install)
 		install_binaries

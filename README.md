@@ -2,9 +2,9 @@
 
 Small, composable command-line tools for DevOps, infrastructure automation, and security diagnostics.
 
-The repository also includes four functional macOS-oriented research commands:
-`homestate`, `metascore`, `pll`, and `bundleinfo`. Their completion status and
-remaining research backlog are tracked in [IDEAS.md](IDEAS.md).
+The repository also includes eleven functional macOS-oriented research commands.
+Their contracts and platform boundaries are documented in
+[specs/MACOS_SECURITY_SUITE.md](specs/MACOS_SECURITY_SUITE.md).
 
 > [!IMPORTANT]
 > Seven roadmap commands (`jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff`) are implemented in this repository but have not been released yet. The other 17 roadmap commands are clearly marked test scaffolds: they build, support `--help` and `--version`, and intentionally return a nonzero status for operational use until implemented.
@@ -37,6 +37,13 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `metascore` | Implemented, unreleased MVP | Score file metadata and extended-attribute-name changes against a saved baseline. |
 | `pll` | Implemented, unreleased MVP | Lint XML property lists and flag malformed or risky launchd logic. |
 | `bundleinfo` | Implemented, unreleased MVP | Inventory `.app` and `.pkg` structure and metadata without executing bundle contents. |
+| `clt` | Implemented, unreleased MVP | Correlate hidden executables with identical content and optionally quarantine them. |
+| `dtp` | Implemented, unreleased MVP | Compare daemon executable trees with an HMAC-authenticated baseline. |
+| `tjt` | Implemented, unreleased MVP | Sample and report transient processes and deleted executable paths. |
+| `cded` | Implemented, unreleased MVP | Detect sensitive clipboard patterns and explicitly drain unauthorized content. |
+| `amtm` | Implemented, unreleased MVP | Map AppleScript automation text into a static permission graph without execution. |
+| `aaas` | Implemented, unreleased MVP | Audit and explicitly revoke macOS Accessibility TCC grants. |
+| `webkit-tool` | Implemented, unreleased MVP | Statically flag risky WebKit settings and native script bridges. |
 
 ### Causal diagnostics
 

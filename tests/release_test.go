@@ -41,6 +41,11 @@ func TestBuildScriptDocumentsHelpAndBuildsEveryCommand(t *testing.T) {
 	if !strings.Contains(script, "for command_dir in cmd/*") {
 		t.Fatal("build.sh does not build every cmd directory")
 	}
+	for _, target := range []string{"test_project", "check_project", "list_commands"} {
+		if !strings.Contains(script, target+"()") {
+			t.Fatalf("build.sh does not implement %s", target)
+		}
+	}
 	entries, err := os.ReadDir(filepath.Join(root, "cmd"))
 	if err != nil {
 		t.Fatalf("read cmd: %v", err)

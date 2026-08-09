@@ -66,7 +66,7 @@ func run() int {
 		"-i": true, "--input": true,
 		"-p": true, "--pitch": true,
 		"--volume": true,
-		"-f": true, "--frequency": true,
+		"-f":       true, "--frequency": true,
 		"-P": true, "--prefix-text": true,
 		"-s": true, "--suffix-text": true,
 		"--format": true, "--seed": true,
@@ -91,8 +91,8 @@ func run() int {
 		suffixText        string
 		ascii, asciiAlt   bool
 		pitch, pitchShort string
-		volStr          string
-		vBool, volBool   bool
+		volStr            string
+		vBool, volBool    bool
 		freq              float64
 		inputPath         string
 		format            string
