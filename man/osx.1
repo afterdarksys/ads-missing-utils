@@ -1,0 +1,24 @@
+.TH OSX 1
+.SH NAME
+osx \- safe, JSON-first macOS subsystem utility
+.SH SYNOPSIS
+.B osx
+[--apply] [--duration DURATION] SUBSYSTEM ACTION [ARGUMENTS]
+.SH DESCRIPTION
+Runs a focused set of macOS-native utilities without invoking a shell. Results
+are emitted as versioned JSON. Read-only operations run normally; an operation
+that changes system state requires the explicit \fB--apply\fR flag.
+.SH EXAMPLES
+.B osx defaults read com.apple.finder AppleShowAllFiles
+.br
+.B osx defaults write com.apple.finder AppleShowAllFiles bool true --apply
+.br
+.B osx caffeinate start --duration 45m --apply
+.SH SUBSYSTEMS
+info show; battery status; power settings; network quality or interfaces;
+Spotlight search; LaunchServices opening; DNS status or flush; security
+FileVault, Gatekeeper, firewall, or SIP; updates list or install; defaults
+read, write, or delete; speech; clipboard read or write; ditto copies; AppleScript file
+execution; volume get, set, mute, or unmute; and caffeinate start.
+.SH EXIT STATUS
+0 on success, 2 for invalid usage, and 4 for a rejected or failed native operation.

@@ -7,6 +7,11 @@ binary inspection, and portable manual tooling.
 Their contracts and platform boundaries are documented in
 [specs/MACOS_SECURITY_SUITE.md](specs/MACOS_SECURITY_SUITE.md).
 
+`osx` is a Go-native macOS subsystem utility inspired by the command-dispatch
+idea in `mac-cli`. It provides structured access to `defaults`, `caffeinate`,
+power, network, DNS, security, updates, and volume controls; all state-changing
+actions require `--apply`. Its contract is in [specs/OSX.md](specs/OSX.md).
+
 > [!IMPORTANT]
 > Seven roadmap commands (`jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff`) are implemented in this repository but have not been released yet. The other 17 roadmap commands are clearly marked test scaffolds: they build, support `--help` and `--version`, and intentionally return a nonzero status for operational use until implemented.
 
