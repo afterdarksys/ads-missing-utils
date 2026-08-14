@@ -1,16 +1,51 @@
-# For OSX Specifically, but could work on Linux too
+# TODO
 
-ripgrep (rg): A line-oriented search tool that recursively searches directories for a regex pattern, vastly faster than grep.
-fd: A simple, fast, and user-friendly alternative to the traditional find command.
-sd: An intuitive alternative to sed for regex-based text replacement.
-hyperfine: A command-line benchmarking tool to test the execution speed of shell commands.
-trippy or trip: A modern combination of traceroute and ping with interactive network analysis.
-bandwhich: A CLI utility for displaying current network utilization by process, connection, and remote IP.
-dua-cli: A tool to view disk space usage and clean up deep directories faster than du
-uf: A colorful, intuitive disk usage/free utility that replaces standard df.
-procs: A modern replacement for ps with colored output, search, and tree view.
+This is the current, actionable backlog. Completed work stays recorded here so
+status is visible without retaining a separate fix ledger.
 
-# For AI
-(laicd) - Local AI Context Daemon: A lightweight CLI tool that indexes local git repos, man pages, and configs to pipe contextual terminal suggestions offline without hitting external APIs.
-(icpsr) - Instant Cross-Platform Sandbox Runner: A native command to spin up isolated, ephemeral micro-VM environments instantly from any CLI script without heavy container overhead.(laicd) - 
+## Completed
 
+- [x] Resolve every finding from the former `TOFIX.md` review ledger.
+- [x] Restore root-level `make test` and `make check` parity with `build.sh`.
+- [x] Add baseline-signature wrong-key, short-key, malformed-signature, and
+  unreadable-executable regressions.
+- [x] Add `binparse`, a read-only ELF/Mach-O/PE structure inspector.
+- [x] Define Logic Manual v1 and add `logic`, `man2logic`, and `info2logic`.
+- [x] Add source man pages for the new commands under `man/`.
+- [x] Add enterprise Linux diagnostic MVPs: `unitwhy`, `restartwhy`, and
+  `selinuxwhy`, with man pages and bounded, read-only evidence contracts.
+- [x] Strengthen `netwhy`, `certwhy`, and `incidentsnap` with explicit
+  evidence boundaries, schemas, documentation, and updated man pages.
+- [x] Add `pcapwhy` for bounded, offline PCAP/PCAPNG flow, VLAN, ICMP, TCP
+  reset, and multi-vantage capture evidence without payload disclosure.
+
+## Next: release readiness
+
+- [x] Enable and implement the v1 black-box acceptance tests for `jwalk`,
+  `envsub`, and `hashsum`.
+- [x] Validate v1 command output against the checked-in JSON Schemas in the
+  active acceptance suite.
+- [x] Restore the Linux/macOS/Windows cross-build matrix; Linux-only commands
+  retain explicit runtime-boundary errors on unsupported systems.
+- [ ] Produce signed release artifacts, checksums, SBOMs, and provenance.
+- [ ] Complete package/name collision review before publishing binaries.
+- [x] Add installation rules for the man pages and Logic documents to the
+  release/package pipeline.
+
+## Candidate utilities
+
+These are research ideas, not committed roadmap scope. Each needs a narrow
+problem statement, security review, platform matrix, and CLI/schema proposal
+before implementation.
+
+### macOS / Linux operator tools
+
+- [ ] Evaluate `rg`, `fd`, `sd`, `hyperfine`, `trippy`, `bandwhich`, `dua`,
+  `uf`, and `procs` for gaps that remain after existing tools are composed.
+
+### AI tooling
+
+- [ ] Research `laicd`: an offline local-context index for repositories,
+  manuals, and configuration. Define privacy boundaries and indexing scope.
+- [ ] Research `icpsr`: a cross-platform ephemeral sandbox runner. Establish
+  a feasible isolation model and threat boundary before promising micro-VMs.

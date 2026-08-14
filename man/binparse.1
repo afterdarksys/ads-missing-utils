@@ -1,0 +1,21 @@
+.TH BINPARSE 1
+.SH NAME
+binparse \- inspect ELF, Mach-O, and PE executable structure
+.SH SYNOPSIS
+.B binparse
+.RB [ \-\-format " json|text" ]
+.I binary
+.SH DESCRIPTION
+Reads executable metadata without executing the target. JSON is the default
+output format. The report includes the detected format, architecture, byte
+order, entry point, sections, symbols, and available DWARF summary data.
+.SH OPTIONS
+.TP
+.B \-\-format
+Select JSON or concise text output.
+.TP
+.B \-\-version
+Print the program version.
+.SH EXIT STATUS
+0 on success, 2 for invalid arguments, and 4 for an unreadable or unsupported
+binary.

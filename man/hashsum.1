@@ -1,0 +1,16 @@
+.TH HASHSUM 1
+.SH NAME
+hashsum \\- create and verify multi-algorithm file manifests
+.SH SYNOPSIS
+.B hashsum
+hashsum create [--from-jwalk] [--root DIRECTORY] [--output MANIFEST]
+.br
+[--workers NUMBER] [--progress] [--format json|ndjson] [PATH ...]
+.br
+hashsum verify --root DIRECTORY [--unexpected] [--format json|ndjson] MANIFEST
+.SH DESCRIPTION
+Computes SHA-256 and BLAKE3 through one read per file, records unstable reads, and verifies manifest paths safely below a root.
+.SH OPTIONS
+Use \fBhashsum --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

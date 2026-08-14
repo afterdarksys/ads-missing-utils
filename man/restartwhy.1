@@ -1,0 +1,20 @@
+.TH RESTARTWHY 1
+.SH NAME
+restartwhy \- find processes using deleted executable mappings
+.SH SYNOPSIS
+.B restartwhy
+[--pid PID] [--format json]
+.SH DESCRIPTION
+Scans visible Linux process mappings for files marked deleted. Such mappings can
+indicate processes that need a restart after a package or executable update.
+This is evidence only: it does not restart processes or change service state.
+.SH OPTIONS
+.TP
+.B --pid PID
+Inspect one process instead of all visible processes.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+0 means no deleted mappings were found; 1 means one or more were found; 2
+invalid usage; 3 partial visibility; and 4 a runtime failure.

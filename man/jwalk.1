@@ -1,0 +1,16 @@
+.TH JWALK 1
+.SH NAME
+jwalk \\- walk directory trees with structured filters
+.SH SYNOPSIS
+.B jwalk
+jwalk [--format json|ndjson] [--include REGEX] [--exclude REGEX] [--type LIST]
+.br
+[--min-size SIZE] [--max-size SIZE] [--older-than DURATION] [--newer-than DURATION]
+.br
+[--follow-symlinks] [--fail-on-error] ROOT ...
+.SH DESCRIPTION
+Emits JSON or NDJSON records for matching filesystem entries. Filters include regex, type, size, age, symlink handling, and error policy.
+.SH OPTIONS
+Use \fBjwalk --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

@@ -1,51 +1,99 @@
 package main
 
 import (
+	"crypto/sha256"
 	"crypto/tls"
+	"encoding/hex"
 	"flag"
 	"fmt"
-	"github.com/afterdarksys/ads-missing-utils/internal/cli"
+	"net"
 	"os"
-	"strings"
+	"sort"
+	"time"
+
+	"github.com/afterdarksys/ads-missing-utils/internal/cli"
 )
 
 type result struct {
-	Schema     string `json:"schema"`
-	Outcome    string `json:"outcome"`
-	Address    string `json:"address"`
-	Subject    string `json:"subject,omitempty"`
-	Issuer     string `json:"issuer,omitempty"`
-	Conclusion string `json:"conclusion"`
+	Schema          string   `json:"schema"`
+	Outcome         string   `json:"outcome"`
+	Address         string   `json:"address"`
+	ServerName      string   `json:"server_name"`
+	Subject         string   `json:"subject,omitempty"`
+	Issuer          string   `json:"issuer,omitempty"`
+	NotBefore       string   `json:"not_before,omitempty"`
+	NotAfter        string   `json:"not_after,omitempty"`
+	DNSNames        []string `json:"dns_names,omitempty"`
+	SHA256          string   `json:"sha256,omitempty"`
+	TLSVersion      string   `json:"tls_version,omitempty"`
+	CipherSuite     string   `json:"cipher_suite,omitempty"`
+	ValidationError string   `json:"validation_error,omitempty"`
+	Conclusion      string   `json:"conclusion"`
 }
 
 func main() { os.Exit(run()) }
+
 func run() int {
 	fs := flag.NewFlagSet("certwhy", flag.ContinueOnError)
 	fs.SetOutput(os.Stderr)
 	address := fs.String("address", "", "TLS host:port")
-	format := fs.String("format", "json", "json")
+	servername := fs.String("servername", "", "TLS server name (defaults to address host)")
+	format := fs.String("format", "json", "output format (json)")
 	version := fs.Bool("version", false, "print version")
-	noColor := fs.Bool("no-color", false, "disable color")
-	_ = noColor
+	_ = fs.Bool("no-color", false, "disable color")
 	if err := fs.Parse(os.Args[1:]); err != nil {
-		return 2
+		return cli.ExitUsage
 	}
 	if *version {
 		fmt.Fprintln(os.Stdout, cli.Version)
-		return 0
+		return cli.ExitOK
 	}
-	if *address == "" || *format != "json" || len(fs.Args()) != 0 {
-		fmt.Fprintln(os.Stderr, "--address and --format json are required")
-		return 2
+	host, _, err := net.SplitHostPort(*address)
+	if *address == "" || err != nil || *format != "json" || len(fs.Args()) != 0 {
+		fmt.Fprintln(os.Stderr, "--address must be a valid HOST:PORT and --format must be json")
+		return cli.ExitUsage
 	}
-	host := strings.Split(*address, ":")[0]
-	connection, err := tls.Dial("tcp", *address, &tls.Config{ServerName: host, MinVersion: tls.VersionTLS12})
-	if err != nil {
+	if *servername != "" {
+		host = *servername
+	}
+	report := result{Schema: "missing-utils/certwhy/v1", Address: *address, ServerName: host}
+	conn, err := tls.Dial("tcp", *address, &tls.Config{ServerName: host, MinVersion: tls.VersionTLS12})
+	if err == nil {
+		defer conn.Close()
+		fill(&report, conn.ConnectionState())
+		report.Outcome = "pass"
+		report.Conclusion = "TLS handshake and peer certificate chain validated"
+		_ = cli.WriteJSON(os.Stdout, report)
+		return cli.ExitOK
+	}
+
+	// A second, explicitly unverified connection is only used to describe the
+	// offered certificate after verification failed. It never changes the result.
+	report.ValidationError = err.Error()
+	unverified, inspectErr := tls.Dial("tcp", *address, &tls.Config{ServerName: host, MinVersion: tls.VersionTLS12, InsecureSkipVerify: true}) // #nosec G402 -- diagnostic evidence after a failed verified handshake
+	if inspectErr != nil {
 		fmt.Fprintln(os.Stderr, err)
-		return 1
+		return cli.ExitFailure
 	}
-	defer connection.Close()
-	certificate := connection.ConnectionState().PeerCertificates[0]
-	cli.WriteJSON(os.Stdout, result{"missing-utils/certwhy/v1", "pass", *address, certificate.Subject.String(), certificate.Issuer.String(), "TLS handshake and peer certificate chain validated"})
-	return 0
+	defer unverified.Close()
+	fill(&report, unverified.ConnectionState())
+	report.Outcome = "fail"
+	report.Conclusion = "TLS validation failed; certificate details were collected from an unverified diagnostic connection"
+	_ = cli.WriteJSON(os.Stdout, report)
+	return cli.ExitFailure
+}
+
+func fill(report *result, state tls.ConnectionState) {
+	if len(state.PeerCertificates) == 0 {
+		return
+	}
+	certificate := state.PeerCertificates[0]
+	fingerprint := sha256.Sum256(certificate.Raw)
+	report.Subject, report.Issuer = certificate.Subject.String(), certificate.Issuer.String()
+	report.NotBefore, report.NotAfter = certificate.NotBefore.UTC().Format(time.RFC3339), certificate.NotAfter.UTC().Format(time.RFC3339)
+	report.DNSNames = append([]string(nil), certificate.DNSNames...)
+	sort.Strings(report.DNSNames)
+	report.SHA256 = hex.EncodeToString(fingerprint[:])
+	report.TLSVersion = tls.VersionName(state.Version)
+	report.CipherSuite = tls.CipherSuiteName(state.CipherSuite)
 }

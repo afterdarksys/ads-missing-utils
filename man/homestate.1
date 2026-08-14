@@ -1,0 +1,14 @@
+.TH HOMESTATE 1
+.SH NAME
+homestate \\- index and safely repair a home-directory state map
+.SH SYNOPSIS
+.B homestate
+homestate [--map-dir DIRECTORY] [--state FILE] [--index|--check|--new-files|--moved-files]
+.br
+[--broken-file-names|--fix-names|--restore-names]
+.SH DESCRIPTION
+Indexes a directory, reports changes and moves, and can apply reversible filename repairs using its recorded mapping.
+.SH OPTIONS
+Use \fBhomestate --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

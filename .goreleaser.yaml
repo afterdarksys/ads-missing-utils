@@ -29,11 +29,82 @@ builds:
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
     flags: [-trimpath]
+  - id: binparse
+    main: ./cmd/binparse
+    binary: binparse
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: logic
+    main: ./cmd/logic
+    binary: logic
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: man2logic
+    main: ./cmd/man2logic
+    binary: man2logic
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: info2logic
+    main: ./cmd/info2logic
+    binary: info2logic
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: netwhy
+    main: ./cmd/netwhy
+    binary: netwhy
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: certwhy
+    main: ./cmd/certwhy
+    binary: certwhy
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: incidentsnap
+    main: ./cmd/incidentsnap
+    binary: incidentsnap
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: unitwhy
+    main: ./cmd/unitwhy
+    binary: unitwhy
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: restartwhy
+    main: ./cmd/restartwhy
+    binary: restartwhy
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: selinuxwhy
+    main: ./cmd/selinuxwhy
+    binary: selinuxwhy
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+  - id: pcapwhy
+    main: ./cmd/pcapwhy
+    binary: pcapwhy
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
 
 archives:
   - format_overrides:
       - goos: windows
         format: zip
+    files:
+      - README*
+      - LICENSE*
+      - man/*
+      - docs/*
 
 checksum:
   name_template: checksums.txt

@@ -1,0 +1,12 @@
+.TH PLL 1
+.SH NAME
+pll \\- lint XML property lists
+.SH SYNOPSIS
+.B pll
+pll FILE ...
+.SH DESCRIPTION
+Lints plist XML and flags malformed or risky launchd logic without loading the plist.
+.SH OPTIONS
+Use \fBpll --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

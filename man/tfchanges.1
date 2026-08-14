@@ -1,0 +1,14 @@
+.TH TFCHANGES 1
+.SH NAME
+tfchanges \\- normalize Terraform or OpenTofu plan JSON
+.SH SYNOPSIS
+.B tfchanges
+tfchanges [summary] [--input PLAN.json] [--format json|ndjson]
+.br
+[--address REGEX] [--module REGEX] [--provider REGEX] [--type REGEX] [--action LIST]
+.SH DESCRIPTION
+Normalizes Terraform/OpenTofu change records and summary risk facts from plan JSON.
+.SH OPTIONS
+Use \fBtfchanges --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

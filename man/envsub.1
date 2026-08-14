@@ -1,0 +1,14 @@
+.TH ENVSUB 1
+.SH NAME
+envsub \\- render a typed environment-backed template
+.SH SYNOPSIS
+.B envsub
+envsub --input TEMPLATE [--schema FILE] [--env-file FILE] [--set NAME=value]
+.br
+[--output FILE] [--format json|ndjson] [--strict-schema|--check|--list-keys|--explain]
+.SH DESCRIPTION
+Expands supported environment placeholders, validates schema types, and masks schema-marked secrets in diagnostics. It never evaluates shell expressions.
+.SH OPTIONS
+Use \fBenvsub --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

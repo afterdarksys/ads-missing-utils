@@ -13,7 +13,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 const Schema = "missing-utils/ports/v1"
@@ -111,7 +110,7 @@ func owners() map[string]owner {
 		if err != nil {
 			continue
 		}
-		value := owner{pid: pid, uid: int(info.Sys().(*syscall.Stat_t).Uid)}
+		value := owner{pid: pid, uid: ownerUID(info)}
 		if data, err := os.ReadFile("/proc/" + entry.Name() + "/comm"); err == nil {
 			value.process = strings.TrimSpace(string(data))
 		}

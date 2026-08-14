@@ -257,9 +257,10 @@ func pathsFromJwalk(input io.Reader) ([]string, error) {
 	var paths []string
 	for scanner.Scan() {
 		var record struct {
-			Path   string  `json:"path"`
-			Status string  `json:"status"`
-			Type   *string `json:"type"`
+			Path         string  `json:"path"`
+			RelativePath *string `json:"relative_path"`
+			Status       string  `json:"status"`
+			Type         *string `json:"type"`
 		}
 		if err := json.Unmarshal(scanner.Bytes(), &record); err != nil {
 			return nil, cli.NewError(cli.ExitUsage, "invalid jwalk NDJSON: %v", err)
@@ -273,7 +274,11 @@ func pathsFromJwalk(input io.Reader) ([]string, error) {
 		if record.Type == nil || *record.Type != "file" {
 			continue
 		}
-		paths = append(paths, record.Path)
+		path := record.Path
+		if record.RelativePath != nil && *record.RelativePath != "" {
+			path = *record.RelativePath
+		}
+		paths = append(paths, path)
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, cli.NewError(cli.ExitUsage, "reading jwalk NDJSON: %v", err)

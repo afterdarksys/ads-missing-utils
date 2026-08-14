@@ -1,0 +1,23 @@
+.TH SELINUXWHY 1
+.SH NAME
+selinuxwhy \- summarize recent SELinux AVC denial evidence
+.SH SYNOPSIS
+.B selinuxwhy
+[--audit-log PATH] [--max-denials COUNT] [--format json]
+.SH DESCRIPTION
+Reads SELinux enforcement state and a bounded set of AVC records from an audit
+log. It does not alter policy, relabel files, or invoke remediation tools.
+Unreadable audit logs are reported as partial visibility.
+.SH OPTIONS
+.TP
+.B --audit-log PATH
+Audit log to inspect; defaults to /var/log/audit/audit.log.
+.TP
+.B --max-denials COUNT
+Return one through 1000 denial records; the default is 50.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+1 means AVC denials were found; 2 invalid usage; 3 partial visibility or no
+denials; and 4 a runtime failure.

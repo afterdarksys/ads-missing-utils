@@ -86,3 +86,15 @@ func TestCreateRejectsMalformedJwalk(t *testing.T) {
 		t.Fatalf("error = %v", err)
 	}
 }
+
+func TestCreateFromJwalkUsesRelativePath(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "file.txt"), []byte("content"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	input := strings.NewReader(`{"path":"` + filepath.Join(root, "file.txt") + `","relative_path":"file.txt","status":"ok","type":"file"}` + "\n")
+	manifest, err := Create(CreateOptions{Root: root, FromJwalk: true}, input)
+	if err != nil || len(manifest.Files) != 1 || manifest.Files[0].Path != "file.txt" {
+		t.Fatalf("manifest=%#v err=%v", manifest, err)
+	}
+}

@@ -1,0 +1,12 @@
+.TH SERVICEWHY 1
+.SH NAME
+servicewhy \\- collect passive service health evidence
+.SH SYNOPSIS
+.B servicewhy
+servicewhy --pid PID [--format json]
+.SH DESCRIPTION
+Collects passive process-health evidence for a service process.
+.SH OPTIONS
+Use \fBservicewhy --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

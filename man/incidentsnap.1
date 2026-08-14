@@ -1,0 +1,17 @@
+.TH INCIDENTSNAP 1
+.SH NAME
+incidentsnap \- capture a read-only host and boot-context snapshot
+.SH SYNOPSIS
+.B incidentsnap
+[--format json]
+.SH DESCRIPTION
+Emits host identity, operating-system release, kernel, boot identifier, and
+uptime evidence when available. It performs no collection beyond these local
+read-only sources and is not a complete forensic acquisition.
+.SH OPTIONS
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+2 means invalid usage; 3 means the bounded snapshot was collected with possible
+missing sources; and 4 means output failed.

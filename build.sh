@@ -18,6 +18,9 @@ Targets:
   build    Build every command in cmd/ into dist/ (default).
   test     Test every project-owned command, internal package, and integration test.
   check    Run gofmt verification, go vet, and the complete project test suite.
+  man      List source man pages packaged with releases.
+  man-build Create gzip-compressed man pages in dist/man.
+  man-install Install compressed man pages into prefix/share/man/man1.
   list     List every command that build and install operate on.
   install  Build every command and install it into prefix/bin.
   clean    Remove generated build output from dist/.
@@ -48,6 +51,28 @@ list_commands() {
 	for command_dir in cmd/*; do
 		[ -d "$command_dir" ] || continue
 		basename "$command_dir"
+	done
+}
+
+list_man_pages() {
+	find man -type f -name '*.[1-9]' -print | sort
+}
+
+build_man_pages() {
+	mkdir -p "$bin_dir/man"
+	rm -f "$bin_dir/man"/*.1.gz
+	for page in man/*.1; do
+		[ -s "$page" ] || continue
+		gzip -9 -c "$page" > "$bin_dir/man/$(basename "$page").gz"
+	done
+}
+
+install_man_pages() {
+	build_man_pages
+	mkdir -p "$prefix/share/man/man1"
+	for page in "$bin_dir/man"/*.1.gz; do
+		[ -f "$page" ] || continue
+		install -m 0644 "$page" "$prefix/share/man/man1/$(basename "$page")"
 	done
 }
 
@@ -88,7 +113,7 @@ for argument in "$@"; do
 			exit 2
 		fi
 		;;
-	build|test|check|list|install|clean|help|-h|--help)
+	build|test|check|man|man-build|man-install|list|install|clean|help|-h|--help)
 		;;
 	*)
 		echo "build.sh: unknown target or option: $argument" >&2
@@ -121,6 +146,15 @@ for argument in "$@"; do
 		;;
 	check)
 		check_project
+		;;
+	man)
+		list_man_pages
+		;;
+	man-build)
+		build_man_pages
+		;;
+	man-install)
+		install_man_pages
 		;;
 	list)
 		list_commands

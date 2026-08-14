@@ -1,0 +1,12 @@
+.TH PWATCH 1
+.SH NAME
+pwatch \\- sample Linux process state
+.SH SYNOPSIS
+.B pwatch
+pwatch --pid PID [--interval DURATION] [--count NUMBER] [--format json|ndjson]
+.SH DESCRIPTION
+Passively samples process state, RSS, and thread count. It does not attach a debugger or send signals.
+.SH OPTIONS
+Use \fBpwatch --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

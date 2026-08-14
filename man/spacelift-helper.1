@@ -1,0 +1,12 @@
+.TH SPACELIFT-HELPER 1
+.SH NAME
+spacelift-helper \\- normalize allowlisted Spacelift hook context
+.SH SYNOPSIS
+.B spacelift-helper
+spacelift-helper [--format json]
+.SH DESCRIPTION
+Reads hook context and produces an allowlisted JSON representation. It does not replace native Spacelift policy enforcement.
+.SH OPTIONS
+Use \fBspacelift-helper --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

@@ -1,0 +1,25 @@
+.TH CERTWHY 1
+.SH NAME
+certwhy \- inspect a live TLS peer certificate and validation result
+.SH SYNOPSIS
+.B certwhy
+--address HOST:PORT [--servername NAME] [--format json]
+.SH DESCRIPTION
+Connects to a TLS peer, validates its certificate chain, and reports certificate
+identity, validity interval, SHA-256 fingerprint, negotiated TLS version, and
+cipher suite. When validation fails but a diagnostic connection succeeds, the
+certificate details are marked unverified; this never makes validation pass.
+.SH OPTIONS
+.TP
+.B --address HOST:PORT
+TLS endpoint. IPv6 addresses must use bracketed host:port syntax.
+.TP
+.B --servername NAME
+TLS server name used for SNI and certificate validation; defaults to the host
+part of --address.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+0 means certificate validation passed; 1 means validation or connection failed;
+2 invalid usage; and 4 a runtime failure.

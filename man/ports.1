@@ -1,0 +1,12 @@
+.TH PORTS 1
+.SH NAME
+ports \\- enumerate local TCP and UDP listeners
+.SH SYNOPSIS
+.B ports
+ports [--port NUMBER] [--transport tcp|udp] [--format json|ndjson]
+.SH DESCRIPTION
+Reports Linux listener evidence and best-effort owning process information.
+.SH OPTIONS
+Use \fBports --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

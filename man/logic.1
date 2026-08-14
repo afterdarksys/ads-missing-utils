@@ -1,0 +1,15 @@
+.TH LOGIC 1
+.SH NAME
+logic \- read portable Logic, roff man, and GNU Info manuals
+.SH SYNOPSIS
+.B logic
+.RB [ \-\-type " auto|logic|man|info" ]
+.RB [ \-\-format " text|json" ]
+.I source
+.SH DESCRIPTION
+Reads a Logic Manual v1 document, roff man-page source, or GNU Info source
+file. The auto type uses the filename extension when possible. Text is the
+default output; JSON exposes the shared document model.
+.SH SEE ALSO
+.BR man2logic (1),
+.BR info2logic (1)

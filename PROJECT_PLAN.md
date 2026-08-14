@@ -1,8 +1,8 @@
 # Missing Utils: Project Plan
 
-**Status:** Initial proposal
+**Status:** Living roadmap
 
-**Implementation status:** The v1 foundation (`jwalk`, `envsub`, and `hashsum`) is implemented and unreleased. All remaining utilities are planned.
+**Implementation status:** The v1 foundation (`jwalk`, `envsub`, and `hashsum`), several automation and diagnostic MVPs, and the binary/documentation utilities described below are implemented and unreleased. Unlisted roadmap capabilities remain planned.
 
 **Working title:** Missing Utils
 
@@ -76,7 +76,11 @@ The primary users are SREs, platform engineers, security engineers, incident res
 | `portwhy` | Who owns this port, how was it launched, and where is it reachable? | `ports` evidence library |
 | `accesswhy` | Why can or cannot an identity access a filesystem object? | Filesystem, ACL, capabilities, mount, and LSM adapters |
 | `patchwhy` | Which processes use replaced code, and what must restart? | Process and package adapters |
-| `netwhy` | Which DNS, route, namespace, proxy, and firewall decisions affect a connection? | Network evidence adapters |
+| `pcapwhy` | What did each capture point observe on the wire, including VLAN, ICMP, and reset evidence? | Offline PCAP/PCAPNG parser; multi-vantage comparison |
+| `netwhy` | Which DNS, route, namespace, proxy, and firewall decisions affect a connection? | DNS/default-route/proxy MVP; network evidence adapters |
+| `unitwhy` | What does systemd report about a unit's state, start result, and hardening? | systemd show/journal adapters |
+| `restartwhy` | Which visible processes still map files deleted by an update? | Linux `/proc` mappings; package correlation later |
+| `selinuxwhy` | Is SELinux enforcing and which AVC denials are relevant? | SELinux and audit-log adapters |
 | `servicewhy` | Why is a service unhealthy, restarting, or blocked? | `pwatch` and service-manager adapters |
 | `binarywhy` | Where did an executable come from, and has it changed? | Package and provenance adapters |
 | `authwhy` | Which account, group, SSH, PAM, NSS, or policy rule affects login? | Identity adapters |
@@ -101,6 +105,21 @@ These commands consume and emit JSON as their primary interface. They are design
 | `regocheck` | Evaluate and test OPA/Rego policies locally against versioned Terraform and Spacelift fixtures | Rego, JSON inputs, schemas, and expected decisions |
 
 These tools should remain narrow. `jsongate` is not a replacement for OPA/Rego, Sentinel, or Spacelift policy. It supplies a predictable local/CI exit decision for hooks and simple workflows; organizations with a policy engine can consume the underlying findings directly.
+
+### 5.4 Binary and documentation utilities
+
+| Command | Purpose | Initial platform |
+|---|---|---|
+| `binparse` | Safely inspect ELF, Mach-O, and PE headers, sections, symbols, and available DWARF metadata | Cross-platform |
+| `logic` | Read Logic Manual v1 documents and import roff man or GNU Info source | Cross-platform |
+| `man2logic` | Convert common roff man macros into Logic Manual v1 | Cross-platform |
+| `info2logic` | Convert GNU Info nodes into Logic Manual v1 | Cross-platform |
+
+`binparse` is an evidence collector, not a malware classifier or signature
+verifier. It uses Go's `debug/elf`, `debug/macho`, `debug/pe`, `debug/dwarf`,
+and `encoding/binary` readers and never executes its target. Logic Manual v1 is
+a bounded, Git-friendly text format with YAML metadata and named sections; see
+[`docs/LOGIC_FORMAT.md`](docs/LOGIC_FORMAT.md).
 
 ## 6. Initial utility specifications
 
@@ -622,12 +641,43 @@ Example external response:
 
 The estimates assume one primary engineer. Parallel work can shorten elapsed time but should not weaken shared-contract review.
 
-### Milestone 0: Foundation — implemented, unreleased
+### Current implementation ledger
+
+The roadmap remains directional; command existence is not a claim that every
+MVP or exit criterion below is complete. The repository currently includes:
+
+- implemented, unreleased file/configuration primitives: `jwalk`, `envsub`,
+  and `hashsum`;
+- implemented, unreleased automation MVPs: `tfchanges`, `varmerge`,
+  `jsonprobe`, `jsondiff`, `jsongate`, `spacelift-helper`, and `regocheck`;
+- implemented Linux-first inventory and diagnostic MVPs, including `ports`,
+  `pwatch`, `portwhy`, `accesswhy`, `patchwhy`, `pcapwhy`, `netwhy`, `servicewhy`,
+  `binarywhy`, `authwhy`, `certwhy`, `expose`, `sandboxdiff`, `driftwhy`,
+  `incidentsnap`, `unitwhy`, `restartwhy`, and `selinuxwhy`;
+- binary and documentation tooling: `binparse`, `logic`, `man2logic`, and
+  `info2logic`; and
+- source section-1 manual pages for every command. `make man-build` and
+  `./build.sh man-build` create compressed pages in `dist/man`; their matching
+  `man-install` targets install under `PREFIX/share/man/man1` or
+  `prefix/share/man/man1`. Release archives include `man/` and `docs/`.
+
+The [TODO](TODO) file is the source of truth for completed and remaining
+checkable work; the roadmap records product intent, dependencies, and release
+criteria.
+
+### Milestone 0: Foundation — substantially implemented, unreleased
 
 - Initialize the Go module, command layout, linting, tests, release build, and CI.
 - Define CLI conventions, exit codes, logging, cancellation, and structured errors.
 - Publish v1 draft schemas for errors and evidence provenance.
 - Add security policy, contribution guide, and supported-platform matrix.
+- Add source manual pages and package/install tooling for documentation.
+
+**Current state:** command layout, tests, CI, draft schemas, release metadata,
+and documentation build/install tooling exist. The command matrix cross-builds
+for Linux/amd64, macOS/arm64, and Windows/amd64; Linux-only commands report
+their runtime boundary on unsupported systems. Signed artifacts, provenance,
+and a published support matrix remain release work.
 
 **Exit criteria:** A skeleton command builds reproducibly on the initial OS matrix; release artifacts include checksums and provenance.
 
@@ -641,14 +691,22 @@ The estimates assume one primary engineer. Parallel work can shorten elapsed tim
 - Benchmark `hashsum` on SSD, rotational-disk, cached, and many-small-file workloads without assuming that more workers are always faster.
 - Fuzz template parsing, `.env` parsing, manifest parsing, and path/output encoding.
 
+**Current state:** the three commands, internal tests, schemas, and direct
+pipeline are present. Active black-box acceptance tests compile the checked-in
+Draft 2020-12 schemas with format assertions and validate real command output;
+they also cover shared structured output, traversal filtering, template
+precedence/redaction/non-writing modes, and the `jwalk | hashsum` create/verify
+pipeline. Benchmarks/fuzzing, package artifacts, signing, and provenance remain
+open.
+
 **Exit criteria:** All three tools have stable v1 CLI/schema candidates, documented threat boundaries, package artifacts, and end-to-end examples. A `jwalk | hashsum` pipeline can create and verify a large manifest without unsafe filename handling or unbounded memory.
 
-### Milestone 1A: Automation contracts and adapters — 3 to 4 weeks
+### Milestone 1A: Automation contracts and adapters — partially implemented
 
 - Freeze the v1 request, response, finding, diagnostic, and gate schemas.
-- Implement `tfchanges` and `varmerge` MVPs.
-- Implement `jsonprobe` one-shot checks and a minimal `jsongate`; defer the more general `jsondiff` until real desired/observed schemas are available.
-- Implement `spacelift-helper` context/report handling and `regocheck` evaluation, fixtures, and JSON test output.
+- Implement `tfchanges` and `varmerge` MVPs. *(Implemented, unreleased.)*
+- Implement `jsonprobe` one-shot checks and a minimal `jsongate`; defer the more general `jsondiff` until real desired/observed schemas are available. *(All four command MVPs exist; contract hardening remains.)*
+- Implement `spacelift-helper` context/report handling and `regocheck` evaluation, fixtures, and JSON test output. *(Readiness/context MVPs exist; full evaluation, fixtures, and compatibility work remain.)*
 - Publish the first Ansible collection modules for `envsub`, `varmerge`, `hashsum`, and `jsonprobe`.
 - Publish tested examples for Terraform external read-only use and Spacelift lifecycle hooks.
 - Add redacted fixture packs for Spacelift plan policies and validate them against a pinned OPA/Rego v1 toolchain.
@@ -656,21 +714,22 @@ The estimates assume one primary engineer. Parallel work can shorten elapsed tim
 
 **Exit criteria:** One example workflow passes typed values through Ansible, creates a Terraform plan, evaluates plan facts in a Spacelift-compatible hook, tests the corresponding Rego policy locally, and retains machine-readable results without shell parsing.
 
-### Milestone 2: Runtime inventory on Linux — 4 to 5 weeks
+### Milestone 2: Runtime inventory on Linux — partially implemented
 
-- Implement Linux `ports`, including permission-degraded output and namespace fixtures.
-- Implement Linux `pwatch`, process identity, child-tree tracking, metrics, and passive captures.
+- Implement Linux `ports`, including permission-degraded output and namespace fixtures. *(Listener inventory MVP exists; fixtures and full namespace coverage remain.)*
+- Implement Linux `pwatch`, process identity, child-tree tracking, metrics, and passive captures. *(Passive sampler MVP exists; durable identity and lifecycle coverage remain.)*
 - Add explicit stack-capture adapters for one or two runtimes after safety review.
 - Stress test PID reuse, rapid fork/exit storms, high listener counts, and backpressure.
 
 **Exit criteria:** A responder can reliably identify the owner of a listener and observe its process tree without a daemon.
 
-### Milestone 3: First causal diagnostics — 5 to 6 weeks
+### Milestone 3: First causal diagnostics — partially implemented
 
-- Build `portwhy` on the `ports` evidence library.
-- Build `accesswhy` for Unix mode bits, path traversal, ACLs, IDs/groups, mount flags, and capabilities; add LSM evidence incrementally.
-- Build `patchwhy` for deleted/replaced executables and libraries plus package/service restart recommendations.
-- Add `incidentsnap` preview using existing collectors.
+- Build `portwhy` on the `ports` evidence library. *(MVP exists.)*
+- Build `accesswhy` for Unix mode bits, path traversal, ACLs, IDs/groups, mount flags, and capabilities; add LSM evidence incrementally. *(Mode-bit/identity MVP exists; broader evidence remains.)*
+- Build `patchwhy` for deleted/replaced executables and libraries plus package/service restart recommendations. *(Identity-observation MVP exists; correlation/recommendations remain.)*
+- Add `incidentsnap` preview using existing collectors. *(Bounded host and
+  boot-context preview exists; signed collection bundles remain future work.)*
 
 **Exit criteria:** Each command produces a useful conclusion, cites evidence, and reports unknowns rather than guessing.
 
@@ -683,17 +742,21 @@ The estimates assume one primary engineer. Parallel work can shorten elapsed tim
 
 **Exit criteria:** Supported systems pass the same black-box listener ownership contract, with documented differences.
 
-### Milestone 5: Expanded explanation suite — incremental
+### Milestone 5: Expanded explanation suite — incremental, MVPs present
 
 Prioritize from field feedback:
 
-1. `netwhy` and `expose`;
+1. `pcapwhy`, `netwhy`, `unitwhy`, `restartwhy`, `selinuxwhy`, and `expose`;
 2. `servicewhy` using `pwatch` evidence;
 3. `binarywhy` and `certwhy`;
 4. `authwhy` and `sandboxdiff`;
 5. `driftwhy` and a production-ready `incidentsnap`.
 
 Each new command requires a problem statement, evidence matrix, privilege analysis, threat model update, and stable structured contract before implementation.
+
+Several named commands already have early MVPs in the repository. They should
+not be promoted to stable contracts until they meet the evidence, privilege,
+and testing requirements above.
 
 ## 9. Testing and quality strategy
 
@@ -781,6 +844,10 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 
 ## 15. Immediate backlog
 
+Milestones 0 and 1 are implemented but unreleased. The active, checkable task
+list is maintained in [`TODO`](TODO); this section records the remaining
+strategic decisions and release-oriented work.
+
 1. Confirm project name, license, target Go version, and initial Linux distributions.
 2. Decide whether command names remain standalone or gain a collision-resistant prefix.
 3. Write the shared CLI and structured-output contract as an RFC.
@@ -789,7 +856,7 @@ Each new command requires a problem statement, evidence matrix, privilege analys
 6. Threat-model `envsub` secret handling, `hashsum` manifest verification, and `pwatch` active capture adapters.
 7. Prototype Linux socket enumeration and process correlation before freezing the `ports` schema.
 8. Establish access to representative BSD and Solaris/illumos test systems before promising release dates.
-9. Implement Milestone 0 and open separate MVP issues for `jwalk`, `envsub`, and `hashsum`.
+9. Complete the v1 validation/release process for `jwalk`, `envsub`, and `hashsum`.
 10. Build a reference pipeline showing Ansible JSON input, `terraform show -json`, `tfchanges`, and a Spacelift hook gate.
 11. Collect redacted Spacelift policy-input fixtures and define the first `regocheck` compatibility profile.
 

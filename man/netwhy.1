@@ -1,0 +1,24 @@
+.TH NETWHY 1
+.SH NAME
+netwhy \- collect DNS, default-route, and proxy evidence
+.SH SYNOPSIS
+.B netwhy
+--host HOST [--port PORT] [--format json]
+.SH DESCRIPTION
+Resolves a hostname or IP address and, on Linux, records the local default route
+and configured proxy environment. Proxy credentials and URL paths are not
+emitted. The command does not test remote reachability or infer firewall and
+network-namespace policy.
+.SH OPTIONS
+.TP
+.B --host HOST
+Hostname or IP address to resolve.
+.TP
+.B --port PORT
+Optional port context from 1 through 65535.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+1 means name resolution failed; 2 invalid usage; 3 a partial evidence report;
+and 4 a runtime failure.

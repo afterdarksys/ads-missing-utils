@@ -1,0 +1,33 @@
+.TH PCAPWHY 1
+.SH NAME
+pcapwhy \- summarize offline packet capture evidence
+.SH SYNOPSIS
+.B pcapwhy
+[--max-packets COUNT] [--max-flows COUNT] [--format json] CAPTURE [CAPTURE ...]
+.SH DESCRIPTION
+Reads offline PCAP and PCAPNG files and emits bounded structured evidence about
+IPv4 and IPv6 flows, Ethernet MAC addresses, VLAN tags, TCP resets, ICMP and
+ICMPv6 control messages, and payload metadata. Multiple captures are compared
+by observed directional flow, which is useful for SPAN or TAP captures from
+different network locations.
+.PP
+The command never captures live traffic, transmits packets, changes interfaces,
+or emits payload bytes. Capture position, packet loss, encryption, NAT, and
+asymmetric routing can limit attribution; a reset or ICMP source is evidence of
+what was observed, not proof of the policy device that originated it.
+.SH OPTIONS
+.TP
+.B --max-packets COUNT
+Maximum packets read from each capture, from 1 through 1000000. The default is
+100000. Hitting the bound returns a partial result.
+.TP
+.B --max-flows COUNT
+Maximum directional flows retained per capture, from 1 through 100000. The
+default is 10000.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+0 means complete bounded evidence was collected; 2 invalid usage; 3 a capture
+reached the packet bound; and 4 an unreadable or malformed capture/runtime
+failure.

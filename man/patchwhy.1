@@ -1,0 +1,12 @@
+.TH PATCHWHY 1
+.SH NAME
+patchwhy \\- observe executable or library restart evidence
+.SH SYNOPSIS
+.B patchwhy
+patchwhy --path PATH [--format json]
+.SH DESCRIPTION
+Captures a current binary or library identity for restart analysis.
+.SH OPTIONS
+Use \fBpatchwhy --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

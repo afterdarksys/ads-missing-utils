@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["schema","outcome","captured_at","host","conclusion"],"properties":{"schema":{"const":"missing-utils/incidentsnap/v1"},"outcome":{"const":"partial"},"captured_at":{"type":"string","format":"date-time"},"host":{"type":"string"},"conclusion":{"type":"string"}}}

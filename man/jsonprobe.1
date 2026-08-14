@@ -1,0 +1,12 @@
+.TH JSONPROBE 1
+.SH NAME
+jsonprobe \\- run declarative readiness checks
+.SH SYNOPSIS
+.B jsonprobe
+jsonprobe [--input SPEC.json] [--format json|ndjson]
+.SH DESCRIPTION
+Runs JSON-described TCP, HTTP, process, and filesystem checks. Standard input is used when --input is omitted.
+.SH OPTIONS
+Use \fBjsonprobe --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

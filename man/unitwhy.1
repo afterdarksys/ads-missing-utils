@@ -1,0 +1,25 @@
+.TH UNITWHY 1
+.SH NAME
+unitwhy \- collect systemd unit state and hardening evidence
+.SH SYNOPSIS
+.B unitwhy
+--unit UNIT [--journal-lines COUNT] [--format json]
+.SH DESCRIPTION
+Queries systemd for a unit's active state, result, execution status, unit file,
+drop-ins, selected resource controls, and selected hardening settings. It can
+also include a bounded tail of that unit's journal. The command is read-only and
+reports partial visibility when systemd or journal access is unavailable.
+.SH OPTIONS
+.TP
+.B --unit UNIT
+Systemd unit name to inspect.
+.TP
+.B --journal-lines COUNT
+Include zero through 200 recent journal lines; the default is 20.
+.TP
+.B --format json
+Emit the versioned JSON report (the only supported format).
+.SH EXIT STATUS
+0 means the unit is active with a successful result; 1 means a failed unit or
+failed result; 2 invalid usage; 3 partial or non-active evidence; and 4 a
+collector runtime failure.

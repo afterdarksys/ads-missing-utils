@@ -1,0 +1,12 @@
+.TH DRIFTWHY 1
+.SH NAME
+driftwhy \\- capture a file-content drift fingerprint
+.SH SYNOPSIS
+.B driftwhy
+driftwhy --path FILE [--format json]
+.SH DESCRIPTION
+Produces a current content observation for later comparison; it does not alter the inspected file.
+.SH OPTIONS
+Use \fBdriftwhy --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

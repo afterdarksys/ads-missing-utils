@@ -1,0 +1,12 @@
+.TH AUTHWHY 1
+.SH NAME
+authwhy \\- report local account and group evidence
+.SH SYNOPSIS
+.B authwhy
+authwhy [--user USER] [--format json]
+.SH DESCRIPTION
+Emits local identity and group evidence and states unavailable PAM, NSS, SSH, and directory-policy evidence.
+.SH OPTIONS
+Use \fBauthwhy --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

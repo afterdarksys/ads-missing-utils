@@ -2,7 +2,8 @@
 
 Small, composable command-line tools for DevOps, infrastructure automation, and security diagnostics.
 
-The repository also includes eleven functional macOS-oriented research commands.
+The repository also includes eleven functional macOS-oriented research commands,
+binary inspection, and portable manual tooling.
 Their contracts and platform boundaries are documented in
 [specs/MACOS_SECURITY_SUITE.md](specs/MACOS_SECURITY_SUITE.md).
 
@@ -52,15 +53,19 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `portwhy` | Implemented, unreleased | Explain visible Linux listener ownership and report partial visibility. |
 | `accesswhy` | Implemented, unreleased | Report path mode and local identity evidence, with explicit access-control gaps. |
 | `patchwhy` | Implemented, unreleased | Capture a current binary/library identity for restart analysis. |
-| `netwhy` | Implemented, unreleased | Collect DNS resolution evidence for a destination. |
+| `pcapwhy` | Implemented, unreleased | Turn offline PCAP/PCAPNG captures into bounded flow, VLAN, ICMP, and reset evidence. |
+| `netwhy` | Implemented, unreleased | Collect DNS, default-route, and redacted proxy evidence for a destination. |
 | `servicewhy` | Implemented, unreleased | Collect passive process-health evidence for a service PID. |
 | `binarywhy` | Implemented, unreleased | Report executable metadata and a SHA-256 integrity observation. |
 | `authwhy` | Implemented, unreleased | Report local account and group evidence, with explicit authentication-policy gaps. |
-| `certwhy` | Implemented, unreleased | Inspect a live TLS peer certificate and validation result. |
+| `certwhy` | Implemented, unreleased | Inspect a live TLS peer certificate, negotiated connection, and validation result. |
 | `expose` | Implemented, unreleased | Report local listener exposure, with explicit firewall/reachability gaps. |
 | `sandboxdiff` | Implemented, unreleased | Compare two JSON workload snapshots. |
 | `driftwhy` | Implemented, unreleased | Capture a current file-content fingerprint for later drift comparison. |
-| `incidentsnap` | Implemented, unreleased | Capture a minimal read-only host identity snapshot. |
+| `incidentsnap` | Implemented, unreleased | Capture a bounded read-only host and boot-context snapshot. |
+| `unitwhy` | Implemented, unreleased | Explain systemd unit state, selected hardening controls, and bounded journal evidence. |
+| `restartwhy` | Implemented, unreleased | Find visible processes still mapping deleted files after updates. |
+| `selinuxwhy` | Implemented, unreleased | Summarize SELinux enforcement state and bounded AVC denial evidence. |
 
 ### Automation and infrastructure as code
 
@@ -73,6 +78,15 @@ Missing Utils is a planned suite of 24 focused utilities built around two ideas:
 | `jsongate` | Implemented, unreleased | Convert JSON findings into consistent pass, deny, or approval-required decisions. |
 | `spacelift-helper` | Implemented, unreleased | Normalize allowlisted Spacelift hook context. |
 | `regocheck` | Implemented, unreleased | Detect a local OPA engine and report policy-evaluation readiness. |
+
+### Binary and documentation tooling
+
+| Command | Status | Purpose |
+|---|---|---|
+| `binparse` | Implemented, unreleased | Read ELF, Mach-O, and PE structure safely using Go debug readers. |
+| `logic` | Implemented, unreleased | Read Logic Manual v1, roff man-page, and GNU Info source files. |
+| `man2logic` | Implemented, unreleased | Convert roff man source into Logic Manual v1. |
+| `info2logic` | Implemented, unreleased | Convert GNU Info source into Logic Manual v1. |
 
 ## JSON-first automation
 
@@ -122,9 +136,12 @@ The file-manifest example is runnable with the v1 foundation below. The Terrafor
 ```sh
 asdf install # if you use asdf; the project pins Go 1.24.6
 make build
+make man-build
 
 # Or use the standalone build helper.
 ./build.sh build
+./build.sh man-build
+./build.sh man-install prefix="$HOME/.local"
 ./build.sh help
 ./build.sh install prefix="$HOME/.local"
 
@@ -133,9 +150,12 @@ make build
 ./dist/envsub --input app.yaml.tmpl --schema env.schema.yaml --output app.yaml
 ./dist/jwalk ./release --type file | ./dist/hashsum create --from-jwalk --root ./release --output release.hashes.json
 ./dist/hashsum verify --root ./release release.hashes.json
+./dist/binparse ./dist/logic
+./dist/man2logic man/logic.1 --output logic.logic
+./dist/logic logic.logic
 ```
 
-Run `make test` for unit tests, `make check` for static analysis plus tests, or `make help` for Make target help. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
+Run `make test` for unit tests, `make check` for static analysis plus tests, or `make help` for Make target help. `make man-build` (or `./build.sh man-build`) creates compressed pages in `dist/man`; `man-install` installs them below `PREFIX/share/man/man1`. The v1 specification and its acceptance criteria live in [specs/V1.md](specs/V1.md).
 
 ## Contributed companion tools
 
@@ -189,6 +209,12 @@ Development is planned in stages:
 8. The remaining explanation and incident-response utilities, prioritized from field feedback.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for utility specifications, architecture, delivery milestones, testing strategy, security boundaries, risks, and open decisions.
+The active completion tracker is [TODO](TODO). Source man pages live in
+[man/](man/); [Logic Manual v1](docs/LOGIC_FORMAT.md) and
+[binparse](docs/BINPARSE.md) have dedicated references. The evidence boundaries
+for the enterprise diagnostic tools are documented in
+[Enterprise diagnostics](docs/ENTERPRISE_DIAGNOSTICS.md); offline packet-capture
+analysis is documented in [pcapwhy](docs/PCAPWHY.md).
 
 ## Current status
 

@@ -1,0 +1,12 @@
+.TH JSONGATE 1
+.SH NAME
+jsongate \\- turn JSON findings into a gate decision
+.SH SYNOPSIS
+.B jsongate
+jsongate --policy POLICY.yaml [--format json]
+.SH DESCRIPTION
+Reads findings from standard input and applies a YAML policy to emit a stable gate decision.
+.SH OPTIONS
+Use \fBjsongate --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.

@@ -1,0 +1,14 @@
+.TH VARMERGE 1
+.SH NAME
+varmerge \\- merge typed configuration values with provenance
+.SH SYNOPSIS
+.B varmerge
+varmerge [--file FILE] [--env-file FILE] [--env-prefix PREFIX] [--set NAME=value]
+.br
+[--schema FILE] [--strict-schema] [--format json]
+.SH DESCRIPTION
+Merges JSON, YAML, dotenv, environment, and explicit values under a shared typed schema.
+.SH OPTIONS
+Use \fBvarmerge --help\fR for the complete, version-specific flag list.
+.SH EXIT STATUS
+Uses the shared CLI status convention: 0 success, 1 a completed negative finding or policy failure, 2 invalid usage, 3 a partial result, and 4 a runtime failure. Not every status applies to every command.
