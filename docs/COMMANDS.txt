@@ -202,6 +202,12 @@ Command: restartwhy
 Scope: Find visible processes still mapping deleted files after updates.
 Boundary: Linux visible deleted mappings only; no automatic restart.
 
+Command: runreceipt
+Scope: Preview or explicitly execute local commands and pipelines with
+private per-stage execution receipts.
+Boundary: Local process evidence only; no automatic retry or remote
+outcome verification.
+
 Command: sandboxdiff
 Scope: Compare two JSON workload snapshots.
 Boundary: JSON comparison only; does not launch or observe a sandbox.

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local execution receipt v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "scope",
+    "state",
+    "outcome_verified",
+    "stages"
+  ],
+  "properties": {
+    "schema": {
+      "const": "missing-utils/runreceipt/v1"
+    },
+    "scope": {
+      "const": "local_process_only"
+    },
+    "outcome_verified": {
+      "const": false
+    },
+    "state": {
+      "enum": [
+        "preview",
+        "running",
+        "completed",
+        "incomplete"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "index",
+          "executable",
+          "argument_count",
+          "argv_sha256",
+          "state",
+          "exit_code"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "executable": {
+            "type": "string",
+            "minLength": 1
+          },
+          "argument_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "argv_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "state": {
+            "enum": [
+              "not_started",
+              "running",
+              "exited",
+              "unknown"
+            ]
+          },
+          "exit_code": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

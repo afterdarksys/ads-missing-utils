@@ -80,6 +80,7 @@ This matrix describes implemented scope, not production certification. All comma
 | `pwatch` | Passively sample Linux process state, RSS, and thread count. | Linux process sampling only. |
 | `regocheck` | Detect a local OPA engine and report policy-evaluation readiness. | Detects OPA readiness only; does not evaluate policies. |
 | `restartwhy` | Find visible processes still mapping deleted files after updates. | Linux visible deleted mappings only; no automatic restart. |
+| `runreceipt` | Preview or explicitly execute local commands and pipelines with private per-stage execution receipts. | Local process evidence only; no automatic retry or remote outcome verification. |
 | `sandboxdiff` | Compare two JSON workload snapshots. | JSON comparison only; does not launch or observe a sandbox. |
 | `selinuxwhy` | Summarize SELinux enforcement state and bounded AVC denial evidence. | Linux enforcement and AVC evidence; no policy changes. |
 | `servicewhy` | Collect passive process-health evidence for a service PID. | Linux process evidence; no service dependency or restart analysis. |
@@ -252,3 +253,5 @@ Before broader implementation begins, contribution guidelines, a code of conduct
 ## License
 
 Missing Utils is available under the [MIT License](LICENSE).
+
+See the [shared accessibility roadmap](ROADMAP.md) and [execution/configuration demonstrations](docs/accessible-operations/DEMO.md).

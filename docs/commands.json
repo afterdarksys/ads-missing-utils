@@ -280,5 +280,11 @@
     "status": "implemented-unreleased",
     "scope": "Group bounded Docker event evidence by resource, action, and exit code.",
     "boundary": "Historical evidence only; limited Docker retention is reported as incomplete. No root-cause inference."
+  },
+  {
+    "name": "runreceipt",
+    "status": "implemented-unreleased",
+    "scope": "Preview or explicitly execute local commands and pipelines with private per-stage execution receipts.",
+    "boundary": "Local process evidence only; no automatic retry or remote outcome verification."
   }
 ]

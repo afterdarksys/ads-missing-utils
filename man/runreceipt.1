@@ -1,0 +1,22 @@
+.TH RUNRECEIPT 1
+.SH NAME
+runreceipt \- record local process and pipeline completion evidence
+.SH SYNOPSIS
+.B runreceipt
+--label NAME [--execute --receipt NEWFILE] -- COMMAND [ARGUMENTS]
+.SH DESCRIPTION
+Defaults to a JSON preview without execution. Explicit execution saves a private
+intent record before starting and a final record with every stage's exit status.
+Use --pipeline FILE for a JSON array of argv arrays. No shell expansion or retry
+is performed. Output is forwarded unchanged; receipts omit output and raw arguments.
+Argument fingerprints are not encryption and may reveal guessable arguments.
+.SH LIMITS
+A running receipt means completion is unknown. Local exit zero does not establish
+remote success. Timeouts stop direct children; descendant or remote work may remain.
+Store receipts in a private directory. Labels, executable paths and directories
+are retained and should not contain secrets.
+.SH EXIT STATUS
+0 all stages exited zero; 1 at least one failed; 2 usage; 4 recording or incomplete
+execution; 124 timeout; 130 interrupt.
+.SH SEE ALSO
+rcdo receipt-review, ROADMAP.md
