@@ -1,0 +1,20 @@
+.TH CONTEXTSNAP 1
+.SH NAME
+contextsnap \- collect bounded AWS or AliCloud caller identity
+.SH SYNOPSIS
+.B contextsnap
+--cloud aws|alicloud --profile NAME --region REGION --collect
+.SH DESCRIPTION
+Invokes the installed AWS or AliCloud CLI for STS caller identity. Collection is
+read-only and bounded by time and output limits. Only account and principal are
+retained from the response. The region is selected for this invocation; STS does
+not establish the location of cloud resources.
+.PP
+For offline use, provide --input FILE and --observed-at RFC3339. This source is
+labeled provided; it does not establish a live identity. No global profile is changed.
+.SH OPTIONS
+Use --help for all bounds and flags.
+.SH EXIT STATUS
+0 normalized identity; 2 invalid usage; 3 partial evidence; 4 input/output failure.
+.SH SEE ALSO
+rcdo context, docs/accessible-operations/DEMO.md

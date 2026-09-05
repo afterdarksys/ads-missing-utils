@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema",
+    "source",
+    "cloud",
+    "profile",
+    "region",
+    "account",
+    "principal",
+    "collected_at",
+    "collector_version",
+    "outcome",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema": {
+      "const": "missing-utils/contextsnap/v1"
+    },
+    "source": {
+      "enum": [
+        "cli",
+        "provided"
+      ]
+    },
+    "cloud": {
+      "enum": [
+        "aws",
+        "alicloud"
+      ]
+    },
+    "profile": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "account": {
+      "type": "string"
+    },
+    "principal": {
+      "type": "string"
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "collector_version": {
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "pass",
+        "partial"
+      ]
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

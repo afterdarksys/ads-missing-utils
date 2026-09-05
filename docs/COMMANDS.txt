@@ -52,6 +52,12 @@ optionally quarantine them.
 Boundary: See command help for supported inputs and platform
 constraints.
 
+Command: contextsnap
+Scope: Collect or normalize AWS and AliCloud caller identity with
+explicit profile and region.
+Boundary: Read-only STS identity; selected region is not proof of
+resource location. Saved inputs retain a supplied timestamp.
+
 Command: driftwhy
 Scope: Capture a current file-content fingerprint for later drift
 comparison.
@@ -69,6 +75,12 @@ Scope: Render environment-backed templates with strict types, defaults,
 validation, and secret-aware diagnostics.
 Boundary: See command help for supported inputs and platform
 constraints.
+
+Command: eventwhy
+Scope: Group bounded Docker event evidence by resource, action, and exit
+code.
+Boundary: Historical evidence only; limited Docker retention is reported
+as incomplete. No root-cause inference.
 
 Command: expose
 Scope: Report local listener exposure, with explicit

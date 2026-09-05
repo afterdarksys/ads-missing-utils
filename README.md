@@ -22,6 +22,14 @@ Missing Utils is a suite of focused utilities built around two ideas:
 - make routine operational work fast, safe, and JSON-native;
 - explain *why* a system behaves as it does, with evidence and explicit uncertainty.
 
+## Accessible operations project
+
+The [project plan](docs/accessible-operations/PROJECT_PLAN.md) covers context,
+interruption recovery, events, resource relationships, IaC consequences, Ansible,
+Spacelift and handoffs. Start with the [local operations demo](docs/accessible-operations/DEMO.md).
+Implementation and validation boundaries are recorded in
+[project status](docs/accessible-operations/STATUS.md).
+
 ## Command capabilities
 
 The authoritative inventory is [docs/commands.json](docs/commands.json).
@@ -44,9 +52,11 @@ This matrix describes implemented scope, not production certification. All comma
 | `cded` | Detect sensitive clipboard patterns and explicitly drain unauthorized content. | macOS clipboard inspection; draining requires explicit apply. |
 | `certwhy` | Inspect a live TLS peer certificate, negotiated connection, and validation result. | Live TLS connection; failed verification stays failed. |
 | `clt` | Correlate hidden executables with identical content and optionally quarantine them. | See command help for supported inputs and platform constraints. |
+| `contextsnap` | Collect or normalize AWS and AliCloud caller identity with explicit profile and region. | Read-only STS identity; selected region is not proof of resource location. Saved inputs retain a supplied timestamp. |
 | `driftwhy` | Capture a current file-content fingerprint for later drift comparison. | Current fingerprint only; needs prior evidence to establish drift. |
 | `dtp` | Compare daemon executable trees with an HMAC-authenticated baseline. | See command help for supported inputs and platform constraints. |
 | `envsub` | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. | See command help for supported inputs and platform constraints. |
+| `eventwhy` | Group bounded Docker event evidence by resource, action, and exit code. | Historical evidence only; limited Docker retention is reported as incomplete. No root-cause inference. |
 | `expose` | Report local listener exposure, with explicit firewall/reachability gaps. | Linux listeners; firewall and remote reachability are not evaluated. |
 | `hashsum` | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. | See command help for supported inputs and platform constraints. |
 | `homestate` | Index a home or mapped directory, report changes and moves, and safely repair or restore problematic names. | See command help for supported inputs and platform constraints. |

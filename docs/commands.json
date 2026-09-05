@@ -268,5 +268,17 @@
     "status": "implemented-unreleased",
     "scope": "Inspect and manage macOS subsystems through structured commands.",
     "boundary": "macOS; state changes require --apply."
+  },
+  {
+    "name": "contextsnap",
+    "status": "implemented-unreleased",
+    "scope": "Collect or normalize AWS and AliCloud caller identity with explicit profile and region.",
+    "boundary": "Read-only STS identity; selected region is not proof of resource location. Saved inputs retain a supplied timestamp."
+  },
+  {
+    "name": "eventwhy",
+    "status": "implemented-unreleased",
+    "scope": "Group bounded Docker event evidence by resource, action, and exit code.",
+    "boundary": "Historical evidence only; limited Docker retention is reported as incomplete. No root-cause inference."
   }
 ]

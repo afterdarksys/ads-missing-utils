@@ -1,0 +1,24 @@
+.TH EVENTWHY 1
+.SH NAME
+eventwhy \- summarize bounded Docker event evidence
+.SH SYNOPSIS
+.B eventwhy
+[--input EVENTS.ndjson] [--max-events 2000]
+.PP
+.B eventwhy
+--collect --context NAME [--window 5m] [--timeout 20s]
+.SH DESCRIPTION
+Groups container events by resource, action, and reported exit code. Preserves
+counts and first/last timestamps. Drops unrelated labels and payloads. Exit 137
+does not by itself establish an out-of-memory cause.
+.PP
+Live collection retrieves a finite historical window. Docker history is limited,
+so completeness of that window remains unknown and the result is partial.
+This command does not provide a continuous monitor or current health verdict.
+.SH OPTIONS
+Use --help for all bounds and flags. Input is limited to 4 MiB and each record to
+256 KiB. Exceeding input or record limits produces partial evidence.
+.SH EXIT STATUS
+0 supplied evidence parsed; 2 invalid usage; 3 partial evidence; 4 input/output failure.
+.SH SEE ALSO
+rcdo watch, docs/accessible-operations/DEMO.md
