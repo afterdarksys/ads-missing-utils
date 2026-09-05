@@ -1,0 +1,272 @@
+[
+  {
+    "name": "jwalk",
+    "status": "implemented-unreleased",
+    "scope": "Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "envsub",
+    "status": "implemented-unreleased",
+    "scope": "Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "hashsum",
+    "status": "implemented-unreleased",
+    "scope": "Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "meow",
+    "status": "implemented-unreleased",
+    "scope": "Whimsical cat sound text transformer with translation, prefix, emphasis, and pitch controls.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "pwatch",
+    "status": "implemented-unreleased",
+    "scope": "Passively sample Linux process state, RSS, and thread count.",
+    "boundary": "Linux process sampling only."
+  },
+  {
+    "name": "ports",
+    "status": "implemented-unreleased",
+    "scope": "Produce a Linux TCP/UDP listener map with best-effort process ownership.",
+    "boundary": "Linux listener inventory; process ownership is best effort."
+  },
+  {
+    "name": "homestate",
+    "status": "implemented-unreleased",
+    "scope": "Index a home or mapped directory, report changes and moves, and safely repair or restore problematic names.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "metascore",
+    "status": "implemented-unreleased",
+    "scope": "Score file metadata and extended-attribute-name changes against a saved baseline.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "pll",
+    "status": "implemented-unreleased",
+    "scope": "Lint XML property lists and flag malformed or risky launchd logic.",
+    "boundary": "XML property lists only; not a launchd runtime validator."
+  },
+  {
+    "name": "bundleinfo",
+    "status": "implemented-unreleased",
+    "scope": "Inventory `.app` and `.pkg` structure and metadata without executing bundle contents.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "clt",
+    "status": "implemented-unreleased",
+    "scope": "Correlate hidden executables with identical content and optionally quarantine them.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "dtp",
+    "status": "implemented-unreleased",
+    "scope": "Compare daemon executable trees with an HMAC-authenticated baseline.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "tjt",
+    "status": "implemented-unreleased",
+    "scope": "Sample and report transient processes and deleted executable paths.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "cded",
+    "status": "implemented-unreleased",
+    "scope": "Detect sensitive clipboard patterns and explicitly drain unauthorized content.",
+    "boundary": "macOS clipboard inspection; draining requires explicit apply."
+  },
+  {
+    "name": "amtm",
+    "status": "implemented-unreleased",
+    "scope": "Map AppleScript automation text into a static permission graph without execution.",
+    "boundary": "Static AppleScript text analysis; no script execution."
+  },
+  {
+    "name": "aaas",
+    "status": "implemented-unreleased",
+    "scope": "Audit and explicitly revoke macOS Accessibility TCC grants.",
+    "boundary": "macOS TCC audit; revocation requires explicit apply."
+  },
+  {
+    "name": "webkit-tool",
+    "status": "implemented-unreleased",
+    "scope": "Statically flag risky WebKit settings and native script bridges.",
+    "boundary": "Static heuristics; no exploitability verdict."
+  },
+  {
+    "name": "portwhy",
+    "status": "implemented-unreleased",
+    "scope": "Explain visible Linux listener ownership and report partial visibility.",
+    "boundary": "Linux; reports partial process visibility."
+  },
+  {
+    "name": "accesswhy",
+    "status": "implemented-unreleased",
+    "scope": "Report path mode and local identity evidence, with explicit access-control gaps.",
+    "boundary": "Mode and local identity evidence; ACL and policy evaluation are incomplete."
+  },
+  {
+    "name": "patchwhy",
+    "status": "implemented-unreleased",
+    "scope": "Capture a current binary/library identity for restart analysis.",
+    "boundary": "Current fingerprint only; no process mapping or restart recommendation."
+  },
+  {
+    "name": "pcapwhy",
+    "status": "implemented-unreleased",
+    "scope": "Turn offline PCAP/PCAPNG captures into bounded flow, VLAN, ICMP, and reset evidence.",
+    "boundary": "Offline, bounded capture analysis; no live capture."
+  },
+  {
+    "name": "netwhy",
+    "status": "implemented-unreleased",
+    "scope": "Collect DNS, default-route, and redacted proxy evidence for a destination.",
+    "boundary": "DNS, route and proxy evidence; no reachability or firewall conclusion."
+  },
+  {
+    "name": "servicewhy",
+    "status": "implemented-unreleased",
+    "scope": "Collect passive process-health evidence for a service PID.",
+    "boundary": "Linux process evidence; no service dependency or restart analysis."
+  },
+  {
+    "name": "binarywhy",
+    "status": "implemented-unreleased",
+    "scope": "Report executable metadata and a SHA-256 integrity observation.",
+    "boundary": "Metadata and hash observation; no trust or malware verdict."
+  },
+  {
+    "name": "authwhy",
+    "status": "implemented-unreleased",
+    "scope": "Report local account and group evidence, with explicit authentication-policy gaps.",
+    "boundary": "Local account evidence; authentication policy is not evaluated."
+  },
+  {
+    "name": "certwhy",
+    "status": "implemented-unreleased",
+    "scope": "Inspect a live TLS peer certificate, negotiated connection, and validation result.",
+    "boundary": "Live TLS connection; failed verification stays failed."
+  },
+  {
+    "name": "expose",
+    "status": "implemented-unreleased",
+    "scope": "Report local listener exposure, with explicit firewall/reachability gaps.",
+    "boundary": "Linux listeners; firewall and remote reachability are not evaluated."
+  },
+  {
+    "name": "sandboxdiff",
+    "status": "implemented-unreleased",
+    "scope": "Compare two JSON workload snapshots.",
+    "boundary": "JSON comparison only; does not launch or observe a sandbox."
+  },
+  {
+    "name": "driftwhy",
+    "status": "implemented-unreleased",
+    "scope": "Capture a current file-content fingerprint for later drift comparison.",
+    "boundary": "Current fingerprint only; needs prior evidence to establish drift."
+  },
+  {
+    "name": "incidentsnap",
+    "status": "implemented-unreleased",
+    "scope": "Capture a bounded read-only host and boot-context snapshot.",
+    "boundary": "Host and boot context only; not a forensic acquisition."
+  },
+  {
+    "name": "unitwhy",
+    "status": "implemented-unreleased",
+    "scope": "Explain systemd unit state, selected hardening controls, and bounded journal evidence.",
+    "boundary": "Linux systemd and bounded journal evidence; no mutation."
+  },
+  {
+    "name": "restartwhy",
+    "status": "implemented-unreleased",
+    "scope": "Find visible processes still mapping deleted files after updates.",
+    "boundary": "Linux visible deleted mappings only; no automatic restart."
+  },
+  {
+    "name": "selinuxwhy",
+    "status": "implemented-unreleased",
+    "scope": "Summarize SELinux enforcement state and bounded AVC denial evidence.",
+    "boundary": "Linux enforcement and AVC evidence; no policy changes."
+  },
+  {
+    "name": "tfchanges",
+    "status": "implemented-unreleased",
+    "scope": "Normalize Terraform/OpenTofu plan JSON into concise resource-change records and evidence-based risk facts.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "varmerge",
+    "status": "implemented-unreleased",
+    "scope": "Merge environment, JSON, YAML, and defaults under a typed schema with value provenance.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "jsonprobe",
+    "status": "implemented-unreleased",
+    "scope": "Run declarative TCP, HTTP, process, and filesystem readiness checks.",
+    "boundary": "TCP, HTTP and file checks; process checks require Linux. No root-cause verdict."
+  },
+  {
+    "name": "jsondiff",
+    "status": "implemented-unreleased",
+    "scope": "Compare structured desired and observed state with JSON Pointer paths and machine-readable changes.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "jsongate",
+    "status": "implemented-unreleased",
+    "scope": "Convert JSON findings into consistent pass, deny, or approval-required decisions.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "spacelift-helper",
+    "status": "implemented-unreleased",
+    "scope": "Normalize allowlisted Spacelift hook context.",
+    "boundary": "Allowlisted environment context only; no hook execution or retention."
+  },
+  {
+    "name": "regocheck",
+    "status": "implemented-unreleased",
+    "scope": "Detect a local OPA engine and report policy-evaluation readiness.",
+    "boundary": "Detects OPA readiness only; does not evaluate policies."
+  },
+  {
+    "name": "binparse",
+    "status": "implemented-unreleased",
+    "scope": "Read ELF, Mach-O, and PE structure safely using Go debug readers.",
+    "boundary": "ELF, Mach-O and PE structure; does not execute input."
+  },
+  {
+    "name": "logic",
+    "status": "implemented-unreleased",
+    "scope": "Read Logic Manual v1, roff man-page, and GNU Info source files.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "man2logic",
+    "status": "implemented-unreleased",
+    "scope": "Convert roff man source into Logic Manual v1.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "info2logic",
+    "status": "implemented-unreleased",
+    "scope": "Convert GNU Info source into Logic Manual v1.",
+    "boundary": "See command help for supported inputs and platform constraints."
+  },
+  {
+    "name": "osx",
+    "status": "implemented-unreleased",
+    "scope": "Inspect and manage macOS subsystems through structured commands.",
+    "boundary": "macOS; state changes require --apply."
+  }
+]

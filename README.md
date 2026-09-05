@@ -13,85 +13,73 @@ power, network, DNS, security, updates, and volume controls; all state-changing
 actions require `--apply`. Its contract is in [specs/OSX.md](specs/OSX.md).
 
 > [!IMPORTANT]
-> Seven roadmap commands (`jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff`) are implemented in this repository but have not been released yet. The other 17 roadmap commands are clearly marked test scaffolds: they build, support `--help` and `--version`, and intentionally return a nonzero status for operational use until implemented.
+> Commands are implemented at the bounded scopes listed below and remain unreleased. Building successfully does not establish production readiness.
 
 Linux has excellent low-level tools for inspecting files, processes, services, networks, and security controls. What is often missing is a safe, structured way to combine that evidence—or to replace a fragile shell pipeline with a predictable command.
 
-Missing Utils is a planned suite of 24 focused utilities built around two ideas:
+Missing Utils is a suite of focused utilities built around two ideas:
 
 - make routine operational work fast, safe, and JSON-native;
 - explain *why* a system behaves as it does, with evidence and explicit uncertainty.
 
-## Toolkit roadmap
+## Command capabilities
 
-### Operational primitives
+The authoritative inventory is [docs/commands.json](docs/commands.json).
+A [linear, 72-column version](docs/COMMANDS.txt) is available for speech and magnification.
+Run `python3 scripts/update-capabilities.py` after changing command scope;
+CI checks that the inventory covers every command and this matrix is current.
 
-| Command | Status | Purpose |
+<!-- BEGIN GENERATED CAPABILITIES -->
+This matrix describes implemented scope, not production certification. All commands are unreleased.
+
+| Command | Scope | Boundary |
 |---|---|---|
-| `jwalk` | Implemented, unreleased | Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines. |
-| `envsub` | Implemented, unreleased | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. |
-| `hashsum` | Implemented, unreleased | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. |
-| `meow` | Implemented, unreleased | Whimsical cat sound text transformer with translation, prefix, emphasis, and pitch controls. |
-| `pwatch` | Implemented, unreleased | Passively sample Linux process state, RSS, and thread count. |
-| `ports` | Implemented, unreleased | Produce a Linux TCP/UDP listener map with best-effort process ownership. |
-
-### macOS filesystem and bundle research
-
-| Command | Status | Purpose |
-|---|---|---|
-| `homestate` | Implemented, unreleased | Index a home or mapped directory, report changes and moves, and safely repair or restore problematic names. |
-| `metascore` | Implemented, unreleased MVP | Score file metadata and extended-attribute-name changes against a saved baseline. |
-| `pll` | Implemented, unreleased MVP | Lint XML property lists and flag malformed or risky launchd logic. |
-| `bundleinfo` | Implemented, unreleased MVP | Inventory `.app` and `.pkg` structure and metadata without executing bundle contents. |
-| `clt` | Implemented, unreleased MVP | Correlate hidden executables with identical content and optionally quarantine them. |
-| `dtp` | Implemented, unreleased MVP | Compare daemon executable trees with an HMAC-authenticated baseline. |
-| `tjt` | Implemented, unreleased MVP | Sample and report transient processes and deleted executable paths. |
-| `cded` | Implemented, unreleased MVP | Detect sensitive clipboard patterns and explicitly drain unauthorized content. |
-| `amtm` | Implemented, unreleased MVP | Map AppleScript automation text into a static permission graph without execution. |
-| `aaas` | Implemented, unreleased MVP | Audit and explicitly revoke macOS Accessibility TCC grants. |
-| `webkit-tool` | Implemented, unreleased MVP | Statically flag risky WebKit settings and native script bridges. |
-
-### Causal diagnostics
-
-| Command | Status | Question it answers |
-|---|---|---|
-| `portwhy` | Implemented, unreleased | Explain visible Linux listener ownership and report partial visibility. |
-| `accesswhy` | Implemented, unreleased | Report path mode and local identity evidence, with explicit access-control gaps. |
-| `patchwhy` | Implemented, unreleased | Capture a current binary/library identity for restart analysis. |
-| `pcapwhy` | Implemented, unreleased | Turn offline PCAP/PCAPNG captures into bounded flow, VLAN, ICMP, and reset evidence. |
-| `netwhy` | Implemented, unreleased | Collect DNS, default-route, and redacted proxy evidence for a destination. |
-| `servicewhy` | Implemented, unreleased | Collect passive process-health evidence for a service PID. |
-| `binarywhy` | Implemented, unreleased | Report executable metadata and a SHA-256 integrity observation. |
-| `authwhy` | Implemented, unreleased | Report local account and group evidence, with explicit authentication-policy gaps. |
-| `certwhy` | Implemented, unreleased | Inspect a live TLS peer certificate, negotiated connection, and validation result. |
-| `expose` | Implemented, unreleased | Report local listener exposure, with explicit firewall/reachability gaps. |
-| `sandboxdiff` | Implemented, unreleased | Compare two JSON workload snapshots. |
-| `driftwhy` | Implemented, unreleased | Capture a current file-content fingerprint for later drift comparison. |
-| `incidentsnap` | Implemented, unreleased | Capture a bounded read-only host and boot-context snapshot. |
-| `unitwhy` | Implemented, unreleased | Explain systemd unit state, selected hardening controls, and bounded journal evidence. |
-| `restartwhy` | Implemented, unreleased | Find visible processes still mapping deleted files after updates. |
-| `selinuxwhy` | Implemented, unreleased | Summarize SELinux enforcement state and bounded AVC denial evidence. |
-
-### Automation and infrastructure as code
-
-| Command | Status | Purpose |
-|---|---|---|
-| `tfchanges` | Implemented, unreleased | Normalize Terraform/OpenTofu plan JSON into concise resource-change records and evidence-based risk facts. |
-| `varmerge` | Implemented, unreleased | Merge environment, JSON, YAML, and defaults under a typed schema with value provenance. |
-| `jsonprobe` | Implemented, unreleased | Run declarative TCP, HTTP, process, and filesystem readiness checks. |
-| `jsondiff` | Implemented, unreleased | Compare structured desired and observed state with JSON Pointer paths and machine-readable changes. |
-| `jsongate` | Implemented, unreleased | Convert JSON findings into consistent pass, deny, or approval-required decisions. |
-| `spacelift-helper` | Implemented, unreleased | Normalize allowlisted Spacelift hook context. |
-| `regocheck` | Implemented, unreleased | Detect a local OPA engine and report policy-evaluation readiness. |
-
-### Binary and documentation tooling
-
-| Command | Status | Purpose |
-|---|---|---|
-| `binparse` | Implemented, unreleased | Read ELF, Mach-O, and PE structure safely using Go debug readers. |
-| `logic` | Implemented, unreleased | Read Logic Manual v1, roff man-page, and GNU Info source files. |
-| `man2logic` | Implemented, unreleased | Convert roff man source into Logic Manual v1. |
-| `info2logic` | Implemented, unreleased | Convert GNU Info source into Logic Manual v1. |
+| `aaas` | Audit and explicitly revoke macOS Accessibility TCC grants. | macOS TCC audit; revocation requires explicit apply. |
+| `accesswhy` | Report path mode and local identity evidence, with explicit access-control gaps. | Mode and local identity evidence; ACL and policy evaluation are incomplete. |
+| `amtm` | Map AppleScript automation text into a static permission graph without execution. | Static AppleScript text analysis; no script execution. |
+| `authwhy` | Report local account and group evidence, with explicit authentication-policy gaps. | Local account evidence; authentication policy is not evaluated. |
+| `binarywhy` | Report executable metadata and a SHA-256 integrity observation. | Metadata and hash observation; no trust or malware verdict. |
+| `binparse` | Read ELF, Mach-O, and PE structure safely using Go debug readers. | ELF, Mach-O and PE structure; does not execute input. |
+| `bundleinfo` | Inventory `.app` and `.pkg` structure and metadata without executing bundle contents. | See command help for supported inputs and platform constraints. |
+| `cded` | Detect sensitive clipboard patterns and explicitly drain unauthorized content. | macOS clipboard inspection; draining requires explicit apply. |
+| `certwhy` | Inspect a live TLS peer certificate, negotiated connection, and validation result. | Live TLS connection; failed verification stays failed. |
+| `clt` | Correlate hidden executables with identical content and optionally quarantine them. | See command help for supported inputs and platform constraints. |
+| `driftwhy` | Capture a current file-content fingerprint for later drift comparison. | Current fingerprint only; needs prior evidence to establish drift. |
+| `dtp` | Compare daemon executable trees with an HMAC-authenticated baseline. | See command help for supported inputs and platform constraints. |
+| `envsub` | Render environment-backed templates with strict types, defaults, validation, and secret-aware diagnostics. | See command help for supported inputs and platform constraints. |
+| `expose` | Report local listener exposure, with explicit firewall/reachability gaps. | Linux listeners; firewall and remote reachability are not evaluated. |
+| `hashsum` | Compute SHA-256 and BLAKE3 concurrently and create verifiable manifests for large file sets. | See command help for supported inputs and platform constraints. |
+| `homestate` | Index a home or mapped directory, report changes and moves, and safely repair or restore problematic names. | See command help for supported inputs and platform constraints. |
+| `incidentsnap` | Capture a bounded read-only host and boot-context snapshot. | Host and boot context only; not a forensic acquisition. |
+| `info2logic` | Convert GNU Info source into Logic Manual v1. | See command help for supported inputs and platform constraints. |
+| `jsondiff` | Compare structured desired and observed state with JSON Pointer paths and machine-readable changes. | See command help for supported inputs and platform constraints. |
+| `jsongate` | Convert JSON findings into consistent pass, deny, or approval-required decisions. | See command help for supported inputs and platform constraints. |
+| `jsonprobe` | Run declarative TCP, HTTP, process, and filesystem readiness checks. | TCP, HTTP and file checks; process checks require Linux. No root-cause verdict. |
+| `jwalk` | Walk large directory trees with regex, age, size, and type filters, emitting JSON Lines. | See command help for supported inputs and platform constraints. |
+| `logic` | Read Logic Manual v1, roff man-page, and GNU Info source files. | See command help for supported inputs and platform constraints. |
+| `man2logic` | Convert roff man source into Logic Manual v1. | See command help for supported inputs and platform constraints. |
+| `meow` | Whimsical cat sound text transformer with translation, prefix, emphasis, and pitch controls. | See command help for supported inputs and platform constraints. |
+| `metascore` | Score file metadata and extended-attribute-name changes against a saved baseline. | See command help for supported inputs and platform constraints. |
+| `netwhy` | Collect DNS, default-route, and redacted proxy evidence for a destination. | DNS, route and proxy evidence; no reachability or firewall conclusion. |
+| `osx` | Inspect and manage macOS subsystems through structured commands. | macOS; state changes require --apply. |
+| `patchwhy` | Capture a current binary/library identity for restart analysis. | Current fingerprint only; no process mapping or restart recommendation. |
+| `pcapwhy` | Turn offline PCAP/PCAPNG captures into bounded flow, VLAN, ICMP, and reset evidence. | Offline, bounded capture analysis; no live capture. |
+| `pll` | Lint XML property lists and flag malformed or risky launchd logic. | XML property lists only; not a launchd runtime validator. |
+| `ports` | Produce a Linux TCP/UDP listener map with best-effort process ownership. | Linux listener inventory; process ownership is best effort. |
+| `portwhy` | Explain visible Linux listener ownership and report partial visibility. | Linux; reports partial process visibility. |
+| `pwatch` | Passively sample Linux process state, RSS, and thread count. | Linux process sampling only. |
+| `regocheck` | Detect a local OPA engine and report policy-evaluation readiness. | Detects OPA readiness only; does not evaluate policies. |
+| `restartwhy` | Find visible processes still mapping deleted files after updates. | Linux visible deleted mappings only; no automatic restart. |
+| `sandboxdiff` | Compare two JSON workload snapshots. | JSON comparison only; does not launch or observe a sandbox. |
+| `selinuxwhy` | Summarize SELinux enforcement state and bounded AVC denial evidence. | Linux enforcement and AVC evidence; no policy changes. |
+| `servicewhy` | Collect passive process-health evidence for a service PID. | Linux process evidence; no service dependency or restart analysis. |
+| `spacelift-helper` | Normalize allowlisted Spacelift hook context. | Allowlisted environment context only; no hook execution or retention. |
+| `tfchanges` | Normalize Terraform/OpenTofu plan JSON into concise resource-change records and evidence-based risk facts. | See command help for supported inputs and platform constraints. |
+| `tjt` | Sample and report transient processes and deleted executable paths. | See command help for supported inputs and platform constraints. |
+| `unitwhy` | Explain systemd unit state, selected hardening controls, and bounded journal evidence. | Linux systemd and bounded journal evidence; no mutation. |
+| `varmerge` | Merge environment, JSON, YAML, and defaults under a typed schema with value provenance. | See command help for supported inputs and platform constraints. |
+| `webkit-tool` | Statically flag risky WebKit settings and native script bridges. | Static heuristics; no exploitability verdict. |
+<!-- END GENERATED CAPABILITIES -->
 
 ## JSON-first automation
 
@@ -132,11 +120,11 @@ terraform show -json tfplan \
   | jsongate --policy deployment-gate.yaml
 ```
 
-The file-manifest example is runnable with the v1 foundation below. The Terraform example remains a proposed contract for the planned automation/IaC track.
+The file-manifest example is runnable with the v1 foundation below. The Terraform pipeline uses implemented commands; validate its gate policy against your organization’s requirements.
 
 ## Build, test, and command availability
 
-`make build` and `./build.sh build` create all roadmap binaries in `dist/`. This is intentional: it lets package, installation, smoke-test, and shell-completion work exercise the complete command inventory. `jwalk`, `envsub`, `hashsum`, `tfchanges`, `varmerge`, `jsonprobe`, and `jsondiff` are functional unreleased commands; every other roadmap binary is a test scaffold and describes that status through `--help`.
+`make build` and `./build.sh build` create every command in `cmd/` under `dist/`. The capability matrix above describes each command’s actual scope and limitations. Platform-specific collection can return partial evidence even when the binary builds successfully.
 
 ```sh
 asdf install # if you use asdf; the project pins Go 1.24.6
@@ -150,7 +138,7 @@ make man-build
 ./build.sh help
 ./build.sh install prefix="$HOME/.local"
 
-./dist/portwhy --help # planned command scaffold
+./dist/portwhy --help # Linux listener evidence
 ./dist/jwalk ./release --type file --format ndjson
 ./dist/envsub --input app.yaml.tmpl --schema env.schema.yaml --output app.yaml
 ./dist/jwalk ./release --type file | ./dist/hashsum create --from-jwalk --root ./release --output release.hashes.json
@@ -223,9 +211,15 @@ analysis is documented in [pcapwhy](docs/PCAPWHY.md).
 
 ## Current status
 
-The repository contains a Go 1.24+ implementation of the v1 foundation plus four portable automation commands, their schemas, tests, CI, and release configuration. Linux is the primary platform; the file/configuration and automation commands also build on macOS and Windows. The 17 scaffold commands compile on those platforms for packaging and integration testing; their final platform support is described in the project plan.
+The repository contains implemented, unreleased commands with schemas, tests,
+CI, and release configuration. The command matrix is the maintained inventory;
+older planning documents describe historical milestones and broader intended scope.
+Linux is the primary runtime diagnostic platform. Build portability does not imply
+that all collectors work on every operating system.
 
-The next milestone is an unreleased v1 validation period for command contracts and packaging, followed by the automation/IaC track.
+The next milestone is validation of command contracts, packaging, and concrete
+workflows. The [RCDO readiness workflow](docs/RCDO_WORKFLOW.md) connects jsonprobe
+observations to accessible reviews with explicit coverage and freshness checks.
 
 Names are provisional. Several proposed command names overlap with existing packages or use generic terms, so naming and package-registry collision checks will happen before the first release.
 

@@ -1,0 +1,237 @@
+Missing Utils command capabilities
+Status: implemented, unreleased; bounded scope, not production certification.
+
+Command: aaas
+Scope: Audit and explicitly revoke macOS Accessibility TCC grants.
+Boundary: macOS TCC audit; revocation requires explicit apply.
+
+Command: accesswhy
+Scope: Report path mode and local identity evidence, with explicit
+access-control gaps.
+Boundary: Mode and local identity evidence; ACL and policy evaluation
+are incomplete.
+
+Command: amtm
+Scope: Map AppleScript automation text into a static permission graph
+without execution.
+Boundary: Static AppleScript text analysis; no script execution.
+
+Command: authwhy
+Scope: Report local account and group evidence, with explicit
+authentication-policy gaps.
+Boundary: Local account evidence; authentication policy is not
+evaluated.
+
+Command: binarywhy
+Scope: Report executable metadata and a SHA-256 integrity observation.
+Boundary: Metadata and hash observation; no trust or malware verdict.
+
+Command: binparse
+Scope: Read ELF, Mach-O, and PE structure safely using Go debug readers.
+Boundary: ELF, Mach-O and PE structure; does not execute input.
+
+Command: bundleinfo
+Scope: Inventory `.app` and `.pkg` structure and metadata without
+executing bundle contents.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: cded
+Scope: Detect sensitive clipboard patterns and explicitly drain
+unauthorized content.
+Boundary: macOS clipboard inspection; draining requires explicit apply.
+
+Command: certwhy
+Scope: Inspect a live TLS peer certificate, negotiated connection, and
+validation result.
+Boundary: Live TLS connection; failed verification stays failed.
+
+Command: clt
+Scope: Correlate hidden executables with identical content and
+optionally quarantine them.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: driftwhy
+Scope: Capture a current file-content fingerprint for later drift
+comparison.
+Boundary: Current fingerprint only; needs prior evidence to establish
+drift.
+
+Command: dtp
+Scope: Compare daemon executable trees with an HMAC-authenticated
+baseline.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: envsub
+Scope: Render environment-backed templates with strict types, defaults,
+validation, and secret-aware diagnostics.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: expose
+Scope: Report local listener exposure, with explicit
+firewall/reachability gaps.
+Boundary: Linux listeners; firewall and remote reachability are not
+evaluated.
+
+Command: hashsum
+Scope: Compute SHA-256 and BLAKE3 concurrently and create verifiable
+manifests for large file sets.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: homestate
+Scope: Index a home or mapped directory, report changes and moves, and
+safely repair or restore problematic names.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: incidentsnap
+Scope: Capture a bounded read-only host and boot-context snapshot.
+Boundary: Host and boot context only; not a forensic acquisition.
+
+Command: info2logic
+Scope: Convert GNU Info source into Logic Manual v1.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: jsondiff
+Scope: Compare structured desired and observed state with JSON Pointer
+paths and machine-readable changes.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: jsongate
+Scope: Convert JSON findings into consistent pass, deny, or approval-
+required decisions.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: jsonprobe
+Scope: Run declarative TCP, HTTP, process, and filesystem readiness
+checks.
+Boundary: TCP, HTTP and file checks; process checks require Linux. No
+root-cause verdict.
+
+Command: jwalk
+Scope: Walk large directory trees with regex, age, size, and type
+filters, emitting JSON Lines.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: logic
+Scope: Read Logic Manual v1, roff man-page, and GNU Info source files.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: man2logic
+Scope: Convert roff man source into Logic Manual v1.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: meow
+Scope: Whimsical cat sound text transformer with translation, prefix,
+emphasis, and pitch controls.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: metascore
+Scope: Score file metadata and extended-attribute-name changes against a
+saved baseline.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: netwhy
+Scope: Collect DNS, default-route, and redacted proxy evidence for a
+destination.
+Boundary: DNS, route and proxy evidence; no reachability or firewall
+conclusion.
+
+Command: osx
+Scope: Inspect and manage macOS subsystems through structured commands.
+Boundary: macOS; state changes require --apply.
+
+Command: patchwhy
+Scope: Capture a current binary/library identity for restart analysis.
+Boundary: Current fingerprint only; no process mapping or restart
+recommendation.
+
+Command: pcapwhy
+Scope: Turn offline PCAP/PCAPNG captures into bounded flow, VLAN, ICMP,
+and reset evidence.
+Boundary: Offline, bounded capture analysis; no live capture.
+
+Command: pll
+Scope: Lint XML property lists and flag malformed or risky launchd
+logic.
+Boundary: XML property lists only; not a launchd runtime validator.
+
+Command: ports
+Scope: Produce a Linux TCP/UDP listener map with best-effort process
+ownership.
+Boundary: Linux listener inventory; process ownership is best effort.
+
+Command: portwhy
+Scope: Explain visible Linux listener ownership and report partial
+visibility.
+Boundary: Linux; reports partial process visibility.
+
+Command: pwatch
+Scope: Passively sample Linux process state, RSS, and thread count.
+Boundary: Linux process sampling only.
+
+Command: regocheck
+Scope: Detect a local OPA engine and report policy-evaluation readiness.
+Boundary: Detects OPA readiness only; does not evaluate policies.
+
+Command: restartwhy
+Scope: Find visible processes still mapping deleted files after updates.
+Boundary: Linux visible deleted mappings only; no automatic restart.
+
+Command: sandboxdiff
+Scope: Compare two JSON workload snapshots.
+Boundary: JSON comparison only; does not launch or observe a sandbox.
+
+Command: selinuxwhy
+Scope: Summarize SELinux enforcement state and bounded AVC denial
+evidence.
+Boundary: Linux enforcement and AVC evidence; no policy changes.
+
+Command: servicewhy
+Scope: Collect passive process-health evidence for a service PID.
+Boundary: Linux process evidence; no service dependency or restart
+analysis.
+
+Command: spacelift-helper
+Scope: Normalize allowlisted Spacelift hook context.
+Boundary: Allowlisted environment context only; no hook execution or
+retention.
+
+Command: tfchanges
+Scope: Normalize Terraform/OpenTofu plan JSON into concise resource-
+change records and evidence-based risk facts.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: tjt
+Scope: Sample and report transient processes and deleted executable
+paths.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: unitwhy
+Scope: Explain systemd unit state, selected hardening controls, and
+bounded journal evidence.
+Boundary: Linux systemd and bounded journal evidence; no mutation.
+
+Command: varmerge
+Scope: Merge environment, JSON, YAML, and defaults under a typed schema
+with value provenance.
+Boundary: See command help for supported inputs and platform
+constraints.
+
+Command: webkit-tool
+Scope: Statically flag risky WebKit settings and native script bridges.
+Boundary: Static heuristics; no exploitability verdict.

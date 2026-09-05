@@ -6,6 +6,12 @@ jsonprobe \\- run declarative readiness checks
 jsonprobe [--input SPEC.json] [--format json|ndjson]
 .SH DESCRIPTION
 Runs JSON-described TCP, HTTP, process, and filesystem checks. Standard input is used when --input is omitted.
+.SH EVIDENCE
+Aggregate JSON includes collected_at (UTC collection start time) and
+collector_version. NDJSON emits individual checks without this envelope.
+RCDO jsonprobe-check consumes aggregate JSON and requires named checks and fresh
+collection metadata. These observations do not establish deployment safety or
+cloud identity.
 .SH OPTIONS
 Use \fBjsonprobe --help\fR for the complete, version-specific flag list.
 .SH EXIT STATUS

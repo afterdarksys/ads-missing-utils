@@ -48,9 +48,11 @@ type Record struct {
 	Diagnostic *cli.Diagnostic `json:"diagnostic,omitempty"`
 }
 type Result struct {
-	Schema  string   `json:"schema"`
-	Outcome string   `json:"outcome"`
-	Checks  []Record `json:"checks"`
+	CollectedAt      time.Time `json:"collected_at"`
+	CollectorVersion string    `json:"collector_version"`
+	Schema           string    `json:"schema"`
+	Outcome          string    `json:"outcome"`
+	Checks           []Record  `json:"checks"`
 }
 
 func Decode(input io.Reader) (Spec, error) {
@@ -82,7 +84,7 @@ func Decode(input io.Reader) (Spec, error) {
 }
 
 func Run(ctx context.Context, spec Spec) Result {
-	result := Result{Schema: Schema, Outcome: "pass", Checks: make([]Record, 0, len(spec.Checks))}
+	result := Result{CollectedAt: time.Now().UTC(), CollectorVersion: cli.Version, Schema: Schema, Outcome: "pass", Checks: make([]Record, 0, len(spec.Checks))}
 	for _, check := range spec.Checks {
 		record := runCheck(ctx, check)
 		result.Checks = append(result.Checks, record)
