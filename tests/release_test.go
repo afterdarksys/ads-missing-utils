@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestAC10BuildSchemasAndReleaseTooling(t *testing.T) {
@@ -52,6 +54,45 @@ func TestBuildScriptDocumentsHelpAndBuildsEveryCommand(t *testing.T) {
 	}
 	if len(entries) < 24 {
 		t.Fatalf("command count = %d, want >= 24", len(entries))
+	}
+}
+
+func TestReleaseConfigBuildsEveryCommand(t *testing.T) {
+	root := repositoryRoot(t)
+	data, err := os.ReadFile(filepath.Join(root, ".goreleaser.yaml"))
+	if err != nil {
+		t.Fatalf("read .goreleaser.yaml: %v", err)
+	}
+	var config struct {
+		Builds []struct {
+			Main   string   `yaml:"main"`
+			Binary string   `yaml:"binary"`
+			GOOS   []string `yaml:"goos"`
+			GOARCH []string `yaml:"goarch"`
+		} `yaml:"builds"`
+	}
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		t.Fatalf("parse .goreleaser.yaml: %v", err)
+	}
+	released := map[string]bool{}
+	for _, build := range config.Builds {
+		name := strings.TrimPrefix(build.Main, "./cmd/")
+		if build.Binary != name {
+			t.Errorf("build %s produces binary %q, want %q", build.Main, build.Binary, name)
+		}
+		if len(build.GOOS) == 0 || len(build.GOARCH) == 0 {
+			t.Errorf("build %s has no goos or goarch targets", build.Main)
+		}
+		released[name] = true
+	}
+	entries, err := os.ReadDir(filepath.Join(root, "cmd"))
+	if err != nil {
+		t.Fatalf("read cmd: %v", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() && !released[entry.Name()] {
+			t.Errorf("cmd/%s is missing from .goreleaser.yaml builds", entry.Name())
+		}
 	}
 }
 

@@ -4,102 +4,216 @@ before:
   hooks:
     - go mod tidy
 
+# Every directory in cmd/ is a released command; tests/release_test.go
+# fails if one is missing here. unitwhy, restartwhy and selinuxwhy read
+# systemd and SELinux state, so they ship for Linux only.
 builds:
-  - id: jwalk
-    main: ./cmd/jwalk
-    binary: jwalk
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: envsub
-    main: ./cmd/envsub
-    binary: envsub
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: hashsum
-    main: ./cmd/hashsum
-    binary: hashsum
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: meow
-    main: ./cmd/meow
-    binary: meow
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
+  - id: aaas
+    main: ./cmd/aaas
+    binary: aaas
+    <<: &defaults
+      goos: [linux, darwin, windows]
+      goarch: [amd64, arm64]
+      flags: [-trimpath]
+      env: [CGO_ENABLED=0]
+  - id: accesswhy
+    main: ./cmd/accesswhy
+    binary: accesswhy
+    <<: *defaults
+  - id: amtm
+    main: ./cmd/amtm
+    binary: amtm
+    <<: *defaults
+  - id: authwhy
+    main: ./cmd/authwhy
+    binary: authwhy
+    <<: *defaults
+  - id: binarywhy
+    main: ./cmd/binarywhy
+    binary: binarywhy
+    <<: *defaults
   - id: binparse
     main: ./cmd/binparse
     binary: binparse
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: logic
-    main: ./cmd/logic
-    binary: logic
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: man2logic
-    main: ./cmd/man2logic
-    binary: man2logic
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: info2logic
-    main: ./cmd/info2logic
-    binary: info2logic
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: netwhy
-    main: ./cmd/netwhy
-    binary: netwhy
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
+    <<: *defaults
+  - id: bundleinfo
+    main: ./cmd/bundleinfo
+    binary: bundleinfo
+    <<: *defaults
+  - id: cded
+    main: ./cmd/cded
+    binary: cded
+    <<: *defaults
   - id: certwhy
     main: ./cmd/certwhy
     binary: certwhy
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
+    <<: *defaults
+  - id: clt
+    main: ./cmd/clt
+    binary: clt
+    <<: *defaults
+  - id: contextsnap
+    main: ./cmd/contextsnap
+    binary: contextsnap
+    <<: *defaults
+  - id: driftwhy
+    main: ./cmd/driftwhy
+    binary: driftwhy
+    <<: *defaults
+  - id: dtp
+    main: ./cmd/dtp
+    binary: dtp
+    <<: *defaults
+  - id: envsub
+    main: ./cmd/envsub
+    binary: envsub
+    <<: *defaults
+  - id: eventwhy
+    main: ./cmd/eventwhy
+    binary: eventwhy
+    <<: *defaults
+  - id: expose
+    main: ./cmd/expose
+    binary: expose
+    <<: *defaults
+  - id: hashsum
+    main: ./cmd/hashsum
+    binary: hashsum
+    <<: *defaults
+  - id: homestate
+    main: ./cmd/homestate
+    binary: homestate
+    <<: *defaults
   - id: incidentsnap
     main: ./cmd/incidentsnap
     binary: incidentsnap
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: unitwhy
-    main: ./cmd/unitwhy
-    binary: unitwhy
-    goos: [linux]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: restartwhy
-    main: ./cmd/restartwhy
-    binary: restartwhy
-    goos: [linux]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
-  - id: selinuxwhy
-    main: ./cmd/selinuxwhy
-    binary: selinuxwhy
-    goos: [linux]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
+    <<: *defaults
+  - id: info2logic
+    main: ./cmd/info2logic
+    binary: info2logic
+    <<: *defaults
+  - id: jsondiff
+    main: ./cmd/jsondiff
+    binary: jsondiff
+    <<: *defaults
+  - id: jsongate
+    main: ./cmd/jsongate
+    binary: jsongate
+    <<: *defaults
+  - id: jsonprobe
+    main: ./cmd/jsonprobe
+    binary: jsonprobe
+    <<: *defaults
+  - id: jwalk
+    main: ./cmd/jwalk
+    binary: jwalk
+    <<: *defaults
+  - id: logic
+    main: ./cmd/logic
+    binary: logic
+    <<: *defaults
+  - id: man2logic
+    main: ./cmd/man2logic
+    binary: man2logic
+    <<: *defaults
+  - id: meow
+    main: ./cmd/meow
+    binary: meow
+    <<: *defaults
+  - id: metascore
+    main: ./cmd/metascore
+    binary: metascore
+    <<: *defaults
+  - id: netwhy
+    main: ./cmd/netwhy
+    binary: netwhy
+    <<: *defaults
+  - id: osx
+    main: ./cmd/osx
+    binary: osx
+    <<: *defaults
+  - id: patchwhy
+    main: ./cmd/patchwhy
+    binary: patchwhy
+    <<: *defaults
   - id: pcapwhy
     main: ./cmd/pcapwhy
     binary: pcapwhy
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
-    flags: [-trimpath]
+    <<: *defaults
+  - id: pll
+    main: ./cmd/pll
+    binary: pll
+    <<: *defaults
+  - id: ports
+    main: ./cmd/ports
+    binary: ports
+    <<: *defaults
+  - id: portwhy
+    main: ./cmd/portwhy
+    binary: portwhy
+    <<: *defaults
+  - id: pwatch
+    main: ./cmd/pwatch
+    binary: pwatch
+    <<: *defaults
+  - id: regocheck
+    main: ./cmd/regocheck
+    binary: regocheck
+    <<: *defaults
+  - id: restartwhy
+    main: ./cmd/restartwhy
+    binary: restartwhy
+    <<: *defaults
+    goos: [linux]
+  - id: runreceipt
+    main: ./cmd/runreceipt
+    binary: runreceipt
+    <<: *defaults
+  - id: sandboxdiff
+    main: ./cmd/sandboxdiff
+    binary: sandboxdiff
+    <<: *defaults
+  - id: selinuxwhy
+    main: ./cmd/selinuxwhy
+    binary: selinuxwhy
+    <<: *defaults
+    goos: [linux]
+  - id: servicewhy
+    main: ./cmd/servicewhy
+    binary: servicewhy
+    <<: *defaults
+  - id: spacelift-helper
+    main: ./cmd/spacelift-helper
+    binary: spacelift-helper
+    <<: *defaults
+  - id: tfchanges
+    main: ./cmd/tfchanges
+    binary: tfchanges
+    <<: *defaults
+  - id: tjt
+    main: ./cmd/tjt
+    binary: tjt
+    <<: *defaults
+  - id: unitwhy
+    main: ./cmd/unitwhy
+    binary: unitwhy
+    <<: *defaults
+    goos: [linux]
+  - id: varmerge
+    main: ./cmd/varmerge
+    binary: varmerge
+    <<: *defaults
+  - id: webkit-tool
+    main: ./cmd/webkit-tool
+    binary: webkit-tool
+    <<: *defaults
 
 archives:
-  - format_overrides:
+  # Linux archives also carry the three Linux-only commands.
+  - allow_different_binary_count: true
+    format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     files:
       - README*
       - LICENSE*
