@@ -12,7 +12,15 @@ func main() {
 	fs := flag.NewFlagSet("servicewhy", flag.ExitOnError)
 	pid := fs.Int("pid", 0, "process ID")
 	format := fs.String("format", "json", "json")
-	if fs.Parse(os.Args[1:]) != nil || *pid < 1 || *format != "json" {
+	version := fs.Bool("version", false, "print version")
+	if fs.Parse(os.Args[1:]) != nil {
+		os.Exit(2)
+	}
+	if *version {
+		fmt.Println(cli.Version)
+		os.Exit(cli.ExitOK)
+	}
+	if *pid < 1 || *format != "json" {
 		os.Exit(2)
 	}
 	r, e := pwatch.Sample(*pid)

@@ -9,13 +9,27 @@ import (
 	"github.com/afterdarksys/ads-missing-utils/internal/hashsum"
 )
 
+const usage = `usage: hashsum <command> [options]
+
+Commands:
+  create   Write a SHA-256 manifest for paths under --root.
+  verify   Check files under --root against a manifest.
+  version  Print the version.
+  help     Show this help text.
+
+Run "hashsum <command> -h" for the options of a command.
+`
+
 func main() { os.Exit(run()) }
 func run() int {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: hashsum create|verify [options]")
+		fmt.Fprint(os.Stderr, usage)
 		return cli.ExitUsage
 	}
 	switch os.Args[1] {
+	case "help", "-h", "--help":
+		fmt.Print(usage)
+		return cli.ExitOK
 	case "create":
 		return create(os.Args[2:])
 	case "verify":
@@ -25,6 +39,7 @@ func run() int {
 		return 0
 	default:
 		fmt.Fprintln(os.Stderr, "unknown subcommand", os.Args[1])
+		fmt.Fprint(os.Stderr, usage)
 		return cli.ExitUsage
 	}
 }

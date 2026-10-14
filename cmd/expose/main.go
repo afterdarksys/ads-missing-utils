@@ -11,7 +11,15 @@ import (
 func main() {
 	fs := flag.NewFlagSet("expose", flag.ExitOnError)
 	format := fs.String("format", "json", "json")
-	if fs.Parse(os.Args[1:]) != nil || *format != "json" {
+	version := fs.Bool("version", false, "print version")
+	if fs.Parse(os.Args[1:]) != nil {
+		os.Exit(2)
+	}
+	if *version {
+		fmt.Println(cli.Version)
+		os.Exit(cli.ExitOK)
+	}
+	if *format != "json" {
 		os.Exit(2)
 	}
 	records, e := ports.List(ports.Options{})

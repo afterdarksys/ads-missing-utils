@@ -10,7 +10,15 @@ import (
 func main() {
 	fs := flag.NewFlagSet("spacelift-helper", flag.ExitOnError)
 	format := fs.String("format", "json", "json")
-	if fs.Parse(os.Args[1:]) != nil || *format != "json" || len(fs.Args()) > 1 {
+	version := fs.Bool("version", false, "print version")
+	if fs.Parse(os.Args[1:]) != nil {
+		os.Exit(2)
+	}
+	if *version {
+		fmt.Println(cli.Version)
+		os.Exit(cli.ExitOK)
+	}
+	if *format != "json" || len(fs.Args()) > 1 {
 		os.Exit(2)
 	}
 	values := map[string]string{}

@@ -12,7 +12,15 @@ func main() {
 	fs := flag.NewFlagSet("regocheck", flag.ExitOnError)
 	policy := fs.String("policy", "", "Rego policy file or directory")
 	format := fs.String("format", "json", "json")
-	if fs.Parse(os.Args[1:]) != nil || *policy == "" || *format != "json" {
+	showVersion := fs.Bool("version", false, "print version")
+	if fs.Parse(os.Args[1:]) != nil {
+		os.Exit(2)
+	}
+	if *showVersion {
+		fmt.Println(cli.Version)
+		os.Exit(cli.ExitOK)
+	}
+	if *policy == "" || *format != "json" {
 		os.Exit(2)
 	}
 	path, e := exec.LookPath("opa")
